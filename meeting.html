@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | میتینگ</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("meetings");
+
+  var id=A.param("id");
+  var box=document.getElementById("box");
+
+  function render(){
+    var m=A.DB.get("meetings",id);
+    if(!m){ box.innerHTML=A.UI.empty("🕵️","این میتینگ پیدا نشد.","بازگشت","meetings.html"); return; }
+    document.title="۰۱۱ رپ | "+m.title;
+    var going=A.Social.hasRsvp(m.id);
+    var d=A.daysTo(m.date), past=d<0;
+
+    box.innerHTML='<a href="meetings.html" class="btn btn--sm btn--ghost" style="margin-bottom:12px">‹ برگشت</a>' +
+      '<section class="hero" style="padding:22px 20px">' +
+        '<span class="hero__kicker">'+(past?"🏁 برگزار شده":"🔥 پیش‌رو")+'</span>' +
+        '<h1 style="font-size:1.24rem;margin:10px 0 6px">'+A.esc(m.title)+'</h1>' +
+        '<p style="margin:0">'+A.esc(m.desc||"")+'</p></section>' +
+      '<div class="card" style="margin-top:14px">' +
+        row("📍 مکان",m.venue) +
+        /* اگر تاریخ قطعی نشده، بازهٔ اعلام‌شده نمایش داده می‌شود */
+        row("🕐 زمان", m.soon ? (m.whenLabel||"به‌زودی") : A.jFull(m.date)) +
+        (past
+          ? row("👥 حاضران", A.fa(m.going||0)+" نفر")
+          : row("👥 ظرفیت", A.fa(m.cap||0)+" نفر · "+A.fa(m.going||0)+" ثبت‌نام")) +
+        (past?"":row("⏳ فاصله", (m.soon?"حدود ":"")+A.fa(d)+" روز مانده")) +
+        '<div style="margin:12px 0"><strong class="sm">لاین‌آپ:</strong>' +
+        '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">' +
+        (m.lineup||[]).map(function(n){return '<span class="tag">🎤 '+A.esc(n)+'</span>';}).join("") +
+        '</div></div>' +
+        (past?"": A.meetingLinks(true) +
+          '<p class="muted xs" style="margin:10px 0 0;text-align:center">' +
+          A.esc(A.LINKS.rsvp.hint) + '</p>') +
+      '</div>' +
+      '<h3 style="font-size:.95rem;margin:18px 0 8px">نظرها</h3>' +
+      '<div class="card" id="cbox"></div>';
+
+    A.mountComments(document.getElementById("cbox"), m.id);
+
+    /* ثبت‌نام داخل سایت موقتاً غیرفعال است؛ از دکمه‌های لینک‌دار بالا انجام می‌شود. */
+  }
+
+  function row(k,v){
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--stroke);font-size:.82rem">' +
+      '<span class="muted">'+k+'</span><span>'+A.esc(v)+'</span></div>';
+  }
+  render();
+  
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | میتینگ‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h1 style="font-size:1.2rem;margin:0">میتینگ‌ها 📅</h1><button class="btn btn--gold btn--sm" id="newM">+ میتینگ</button></div><div class="segs" id="segs"></div><div id="form"></div><div id="list"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("meetings");
+
+  var tab="up";
+  var segs=document.getElementById("segs"), list=document.getElementById("list");
+
+  segs.innerHTML=[["up","پیش‌رو"],["past","آرشیو"]].map(function(s){
+    return '<button class="seg'+(s[0]===tab?" is-on":"")+'" data-k="'+s[0]+'">'+s[1]+'</button>';
+  }).join("");
+
+  segs.addEventListener("click",function(e){
+    var b=e.target.closest(".seg"); if(!b) return;
+    tab=b.getAttribute("data-k");
+    A.$$(".seg",segs).forEach(function(x){x.classList.remove("is-on");});
+    b.classList.add("is-on"); render();
+  });
+
+  function render(){
+    var all=A.DB.all("meetings"), now=Date.now(), rows;
+    if (tab==="up") rows=all.filter(function(m){return new Date(m.date)>=now;})
+                            .sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+    else if (tab==="past") rows=all.filter(function(m){return new Date(m.date)<now;})
+                                   .sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    else {
+      var u=A.Auth.user;
+      if(!u){ list.innerHTML=A.UI.empty("👤","برای دیدن حضورهایت وارد شو.","ورود","auth.html"); return; }
+      var ids=A.DB.all("rsvps").filter(function(r){return r.userId===u.uid;})
+                 .map(function(r){return r.meetingId;});
+      rows=all.filter(function(m){return ids.indexOf(m.id)>=0;});
+    }
+
+    if(!rows.length){
+      list.innerHTML=A.UI.empty("📅", tab==="mine"?"هنوز در میتینگی ثبت‌نام نکردی.":"میتینگی در این بخش نیست.");
+      return;
+    }
+
+    var h="";
+    if (tab==="up"){
+      var m=rows[0], d=A.daysTo(m.date);
+      var pct=Math.min(100,Math.round((m.going||0)/(m.cap||1)*100));
+      /* اگر تاریخ هنوز قطعی نشده (soon)، به‌جای تاریخ و ساعت دقیق
+         بازهٔ اعلام‌شده نمایش داده می‌شود */
+      var whenTxt = m.soon ? (m.whenLabel || "به‌زودی") : A.jFull(m.date);
+      h += '<section class="hero" style="margin-bottom:16px;padding:22px 20px">' +
+        '<span class="hero__kicker">🔥 میتینگ بعدی</span>' +
+        '<h1 style="font-size:1.22rem;margin:10px 0 6px">'+A.esc(m.title)+'</h1>' +
+        '<p style="margin-bottom:12px">'+A.esc(m.venue)+' · '+A.esc(whenTxt)+'</p>' +
+        '<div class="stats" style="margin-bottom:14px">' +
+          '<div class="stat"><b>'+(m.soon?"~"+A.fa(d):(d>=0?A.fa(d):"—"))+'</b><small>روز مانده</small></div>' +
+          '<div class="stat"><b>'+A.fa(m.cap||0)+'</b><small>ظرفیت</small></div>' +
+          '<div class="stat"><b>'+A.nFmt(m.going||0)+'</b><small>ثبت‌نام</small></div></div>' +
+        A.meetingLinks(false) +
+        '<p class="muted xs" style="margin:10px 0 0">' + A.esc(A.LINKS.rsvp.hint) + '</p>' +
+        '<div class="hero__cta" style="margin-top:10px">' +
+          '<a class="btn btn--ghost" href="meeting.html?id='+m.id+'">جزئیات میتینگ</a></div></section>';
+      rows=rows.slice(1);
+    }
+    h += rows.map(A.UI.meetingCard).join("");
+    list.innerHTML=h;
+  }
+
+  /* ثبت‌نام داخل سایت موقتاً غیرفعال است؛
+     کاربر از طریق دکمه‌های لینک‌دار بالا ثبت‌نام می‌کند. */
+
+  document.getElementById("newM").addEventListener("click",function(){
+    if(!A.Auth.isIn) return A.needAuth("برای ساخت میتینگ باید وارد شوی.");
+    var f=document.getElementById("form");
+    if(f.innerHTML){ f.innerHTML=""; return; }
+    f.innerHTML='<div class="card" style="margin-bottom:14px">' +
+      '<h3 style="margin:0 0 12px;font-size:.95rem">میتینگ جدید 📅</h3>' +
+      '<div class="field"><label>عنوان</label><input class="input" id="mT"/></div>' +
+      '<div class="field"><label>مکان</label><input class="input" id="mV"/></div>' +
+      '<div class="field"><label>تاریخ و ساعت</label><input class="input" type="datetime-local" id="mD"/></div>' +
+      '<div class="field"><label>ظرفیت</label><input class="input" type="number" id="mC" value="60"/></div>' +
+      '<div class="field"><label>لاین‌آپ (با ویرگول)</label><input class="input" id="mL"/></div>' +
+      '<div class="field"><label>توضیحات</label><textarea class="input" id="mX"></textarea></div>' +
+      '<button class="btn btn--gold btn--block" id="mSave">ثبت میتینگ</button></div>';
+
+    f.scrollIntoView({behavior:"smooth",block:"center"});
+    document.getElementById("mSave").addEventListener("click",function(){
+      var t=document.getElementById("mT").value.trim();
+      var dt=document.getElementById("mD").value;
+      if(!t||!dt) return A.toast("عنوان و تاریخ لازم است.","err");
+      A.DB.add("meetings",{
+        title:t, venue:document.getElementById("mV").value.trim()||"—",
+        date:new Date(dt).toISOString(), cap:+document.getElementById("mC").value||60, going:0,
+        lineup:document.getElementById("mL").value.split(/[,،]/).map(function(s){return s.trim();}).filter(Boolean),
+        desc:document.getElementById("mX").value.trim(), creatorId:A.Auth.user.uid
+      });
+      A.notify("event","📅","میتینگ «"+t+"» اضافه شد.","meetings.html");
+      f.innerHTML=""; A.toast("میتینگ ثبت شد ✅","ok");
+      tab="up"; segs.children[0].click();
+    });
+  });
+
+  render();
+  
+})();
+</script>
+</body>
+</html>

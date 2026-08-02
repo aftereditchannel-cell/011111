@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | بتل‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h1 style="font-size:1.2rem;margin:0">بتل‌ها ⚔️</h1><button class="btn btn--gold btn--sm" id="newB">+ درخواست بتل</button></div><div class="segs" id="segs"></div><div id="form"></div><div id="list"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("battles");
+
+  var tab = "live";
+  var segs = document.getElementById("segs");
+  var list = document.getElementById("list");
+
+  segs.innerHTML = [["live","🔴 زنده"],["ended","🏁 تمام‌شده"],["mine","👤 من"]]
+    .map(function(s){
+      return '<button class="seg' + (s[0]===tab?" is-on":"") + '" data-k="' + s[0] + '">' + s[1] + '</button>';
+    }).join("");
+
+  segs.addEventListener("click", function(e){
+    var b = e.target.closest(".seg"); if (!b) return;
+    tab = b.getAttribute("data-k");
+    A.$$(".seg",segs).forEach(function(x){ x.classList.remove("is-on"); });
+    b.classList.add("is-on");
+    render();
+  });
+
+  function render(){
+    var all = A.DB.all("battles");
+    var rows;
+    if (tab==="live")  rows = all.filter(function(b){ return b.status==="live"; });
+    else if (tab==="ended") rows = all.filter(function(b){ return b.status!=="live"; });
+    else {
+      var u = A.Auth.user;
+      if (!u){ list.innerHTML = A.UI.empty("👤","برای دیدن بتل‌های خودت وارد شو.","ورود","auth.html"); return; }
+      var mine = A.DB.all("votes").filter(function(v){ return v.userId===u.uid; })
+                   .map(function(v){ return v.battleId; });
+      rows = all.filter(function(b){ return mine.indexOf(b.id)>=0 || b.creatorId===u.uid; });
+    }
+
+    if (!rows.length){
+      list.innerHTML = A.UI.empty("⚔️", tab==="live"
+        ? "الان بتل زنده‌ای نیست. اولین درخواست رو تو بده!" : "چیزی اینجا نیست.");
+      return;
+    }
+
+    list.innerHTML = rows.map(function(b){
+      var a=b.aVotes||0, c=b.bVotes||0, tot=a+c||1;
+      var pa=Math.round(a/tot*100), pb=100-pa;
+      var my=A.Social.myVote(b.id);
+      var live=b.status==="live";
+      var d=A.daysTo(b.endsAt);
+
+      function side(key,name,aid,pct,votes,lead){
+        var voted = my===key;
+        var dis = (!live || !!my) ? " disabled" : "";
+        var cls = voted ? "btn--gold" : (live ? "btn--fire" : "");
+        return '<div class="bside' + (lead?" is-lead":"") + '">' +
+          '<a href="artist.html?id=' + aid + '"><img src="' + A.avatarOf(name) + '" alt=""/></a>' +
+          '<strong>' + A.esc(name) + '</strong>' +
+          '<small>' + A.nFmt(votes) + ' رأی</small>' +
+          '<button class="btn btn--sm ' + cls + '" data-b="' + b.id + '" data-s="' + key + '"' + dis + '>' +
+            (voted ? "رأی تو ✓" : (live ? "رأی بده" : A.fa(pct)+"٪")) + '</button></div>';
+      }
+
+      return '<div class="bcard">' +
+        '<div class="bcard__head">' +
+          (live ? '<span class="bcard__live"><i></i> زنده</span>'
+                : '<span class="muted">🏁 پایان‌یافته</span>') +
+          '<span class="muted xs">' + (live ? (d>0 ? A.fa(d)+" روز مانده" : "امروز تمام می‌شود") : A.ago(b.endsAt)) + '</span>' +
+        '</div>' +
+        '<div class="bcard__body">' +
+          side("a",b.aName,b.aId,pa,a,pa>=pb) +
+          '<div class="bvs">VS</div>' +
+          side("b",b.bName,b.bId,pb,c,pb>pa) +
+        '</div>' +
+        '<div class="bbar"><i style="width:' + pa + '%"></i><i style="width:' + pb + '%"></i></div>' +
+        '<div class="bmeta"><span>' + A.fa(pa) + '٪</span>' +
+          '<span>' + A.nFmt(tot) + ' رأی · ' + A.esc(b.round||"") + '</span>' +
+          '<span>' + A.fa(pb) + '٪</span></div>' +
+        '<div class="bactions">' +
+          '<button class="btn btn--sm btn--ghost" style="flex:1" data-cmt="' + b.id + '">💬 نظرها</button>' +
+        '</div>' +
+        '<div id="c-' + b.id + '" style="padding:0 var(--sp-4) var(--sp-4)"></div>' +
+      '</div>';
+    }).join("");
+  }
+
+  list.addEventListener("click", function(e){
+    var vb = e.target.closest("[data-s]");
+    if (vb){
+      if (!A.Auth.isIn) return A.needAuth("برای رأی دادن باید وارد شوی.");
+      try {
+        A.Social.vote(vb.getAttribute("data-b"), vb.getAttribute("data-s"));
+        var r = vb.getBoundingClientRect();
+        A.heartBurst(r.left+r.width/2, r.top, false);
+        A.toast("رأیت ثبت شد ✅","ok");
+        render();
+      } catch(err){ A.toast(err.message,"err"); }
+      return;
+    }
+    var cb = e.target.closest("[data-cmt]");
+    if (cb){
+      var bid = cb.getAttribute("data-cmt");
+      var box = document.getElementById("c-"+bid);
+      if (box.innerHTML){ box.innerHTML=""; return; }
+      A.mountComments(box, bid);
+    }
+  });
+
+  /* فرم ساخت بتل */
+  document.getElementById("newB").addEventListener("click", function(){
+    if (!A.Auth.isIn) return A.needAuth("برای درخواست بتل باید وارد شوی.");
+    var f = document.getElementById("form");
+    if (f.innerHTML){ f.innerHTML=""; return; }
+    var arts = A.DB.all("artists").filter(function(a){ return !a.type||a.type==="artist"; });
+    var opts = arts.map(function(a){ return '<option value="'+a.id+'">'+A.esc(a.name)+'</option>'; }).join("");
+    f.innerHTML = '<div class="card" style="margin-top:14px">' +
+      '<h3 style="margin:0 0 12px;font-size:.95rem">بتل جدید ⚔️</h3>' +
+      '<div class="field"><label>عنوان</label><input class="input" id="bT" placeholder="مثلاً راند ۵ میتینگ آمل"/></div>' +
+      '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end">' +
+        '<div class="field"><label>طرف اول</label><select class="input" id="bA">'+opts+'</select></div>' +
+        '<div class="bvs" style="padding-bottom:14px">VS</div>' +
+        '<div class="field"><label>طرف دوم</label><select class="input" id="bB">'+opts+'</select></div></div>' +
+      '<div class="field"><label>مرحله</label><input class="input" id="bR" placeholder="نیمه‌نهایی"/></div>' +
+      '<div class="field"><label>مدت (روز)</label><input class="input" type="number" id="bD" value="7" min="1"/></div>' +
+      '<button class="btn btn--gold btn--block" id="bSave">ثبت بتل</button></div>';
+    if (arts[1]) document.getElementById("bB").value = arts[1].id;
+    f.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    document.getElementById("bSave").addEventListener("click", function(){
+      var aid=document.getElementById("bA").value, bid=document.getElementById("bB").value;
+      if (aid===bid) return A.toast("دو طرف بتل نباید یکی باشند.","err");
+      var A1=A.DB.get("artists",aid), B1=A.DB.get("artists",bid);
+      var days=+document.getElementById("bD").value||7;
+      A.DB.add("battles",{
+        title: document.getElementById("bT").value.trim() || (A1.name+" VS "+B1.name),
+        aId:aid,bId:bid,aName:A1.name,bName:B1.name,aVotes:0,bVotes:0,status:"live",
+        round: document.getElementById("bR").value.trim()||"مرحلهٔ باز",
+        endsAt: new Date(Date.now()+days*86400000).toISOString(),
+        creatorId: A.Auth.user.uid
+      });
+      A.notify("battle","⚔️","بتل جدید ساخته شد — رأی‌گیری باز است.","battles.html");
+      f.innerHTML="";
+      A.toast("بتل ساخته شد ⚔️","ok");
+      tab="live"; segs.children[0].click();
+    });
+  });
+
+  render();
+  
+
+  /* ── این بخش هنوز فعال نشده: محتوا بلور می‌شود و دیالوگ نمایش داده می‌شود ── */
+  A.lockPage({
+    icon: "⚔️",
+    title: "بخش بتل‌ها هنوز فعال نشده",
+    text: "سیستم بتل و رأی‌گیری به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!-- پروفایل آرتیست — ?id=... → صفحهٔ آهنگ‌های همان آرتیست -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>۰۱۱ رپ | آرتیست</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body class="bare">
+<div class="empty" style="padding-top:38vh">
+  <div class="empty__ic">🎤</div><p>در حال انتقال…</p>
+  <a class="btn btn--gold" id="go" href="artists.html">ادامه</a>
+</div>
+<script>
+(function(){
+  var m=/[?&]id=([^&#]*)/.exec(location.search);
+  var to = m ? "music.html?artist="+decodeURIComponent(m[1]) : "artists.html";
+  document.getElementById("go").href = to;
+  location.replace(to);
+})();
+</script>
+</body>
+</html>

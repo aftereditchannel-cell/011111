@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | گنگ‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h1 style="font-size:1.2rem;margin:0">گنگ‌ها 👥</h1><button class="btn btn--gold btn--sm" id="newG">+ ساخت گنگ</button></div><p class="muted xs" style="margin:0 0 16px">کلکتیوها و لِیبل‌های رپ منطقه.</p><div id="form"></div><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("");
+
+  var box=document.getElementById("box");
+
+  function render(){
+    var gangs=A.DB.all("gangs"), artists=A.DB.all("artists");
+    if(!gangs.length){ box.innerHTML=A.UI.empty("👥","هنوز گنگی ساخته نشده."); return; }
+    box.innerHTML=gangs.map(function(g){
+      var mem=artists.filter(function(a){return a.gang===g.id;});
+      return '<div class="gcard" data-id="'+g.id+'">' +
+        '<div class="gcard__logo">'+(g.emoji||"👥")+'</div>' +
+        '<div style="flex:1;min-width:0"><strong>'+A.esc(g.name)+'</strong>' +
+        '<p class="muted xs" style="margin:2px 0 0">'+A.fa(g.members||mem.length)+' عضو · '+A.esc(g.city||"—")+'</p>' +
+        '<div style="display:flex;margin-top:6px">' + mem.slice(0,4).map(function(m,i){
+          return '<img src="'+A.avatarOf(m.name)+'" alt="" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--bg-2);margin-inline-start:'+(i?-8:0)+'px"/>';
+        }).join("") + '</div></div>' +
+        '<span class="muted">›</span></div>' +
+        '<div id="g-'+g.id+'"></div>';
+    }).join("");
+  }
+
+  box.addEventListener("click",function(e){
+    var c=e.target.closest(".gcard"); if(!c) return;
+    var id=c.getAttribute("data-id");
+    var panel=document.getElementById("g-"+id);
+    if(panel.innerHTML){ panel.innerHTML=""; return; }
+    var g=A.DB.get("gangs",id);
+    var mem=A.DB.all("artists").filter(function(a){return a.gang===id;});
+    var wins=0; mem.forEach(function(m){ wins+=m.wins||0; });
+    panel.innerHTML='<div class="card" style="margin:-6px 0 14px">' +
+      '<p class="muted sm" style="margin:0 0 12px">'+A.esc(g.desc||"")+'</p>' +
+      '<div style="display:flex;justify-content:space-around;margin-bottom:12px">' +
+        '<div style="text-align:center"><b style="display:block">'+A.fa(g.members||mem.length)+'</b><small class="muted xs">عضو</small></div>' +
+        '<div style="text-align:center"><b style="display:block">'+A.fa(wins)+'</b><small class="muted xs">برد بتل</small></div>' +
+        '<div style="text-align:center"><b style="display:block">'+A.esc(g.city||"—")+'</b><small class="muted xs">پایگاه</small></div></div>' +
+      (mem.length? mem.map(function(m){
+        return '<a class="trow" href="artist.html?id='+m.id+'">' +
+          '<img class="trow__art" style="border-radius:50%" src="'+A.avatarOf(m.name)+'" alt=""/>' +
+          '<div class="trow__meta"><strong>'+A.esc(m.name)+'</strong><small>'+A.esc(m.handle)+'</small></div>' +
+          '<div class="trow__side">›</div></a>';
+      }).join("") : A.UI.empty("👤","عضوی ثبت نشده.")) +
+      '<button class="btn btn--gold btn--block" style="margin-top:12px" data-join="'+id+'">درخواست عضویت</button></div>';
+  });
+
+  box.addEventListener("click",function(e){
+    var j=e.target.closest("[data-join]"); if(!j) return;
+    e.stopPropagation();
+    if(!A.Auth.isIn) return A.needAuth("برای عضویت باید وارد شوی.");
+    A.toast("درخواستت برای ادمین گنگ فرستاده شد ✅","ok");
+  });
+
+  document.getElementById("newG").addEventListener("click",function(){
+    if(!A.Auth.isIn) return A.needAuth("برای ساخت گنگ باید وارد شوی.");
+    var f=document.getElementById("form");
+    if(f.innerHTML){ f.innerHTML=""; return; }
+    f.innerHTML='<div class="card" style="margin-bottom:14px">' +
+      '<div class="field"><label>اسم گنگ</label><input class="input" id="gN"/></div>' +
+      '<div class="field"><label>ایموجی</label><input class="input" id="gE" maxlength="2" placeholder="👑"/></div>' +
+      '<div class="field"><label>شهر</label><input class="input" id="gC"/></div>' +
+      '<div class="field"><label>معرفی</label><textarea class="input" id="gD"></textarea></div>' +
+      '<button class="btn btn--gold btn--block" id="gSave">ساخت گنگ 👥</button></div>';
+    f.scrollIntoView({behavior:"smooth",block:"center"});
+    document.getElementById("gSave").addEventListener("click",function(){
+      var n=document.getElementById("gN").value.trim();
+      if(!n) return A.toast("اسم گنگ را بنویس.","err");
+      A.DB.add("gangs",{ name:n, emoji:document.getElementById("gE").value.trim()||"👥",
+        city:document.getElementById("gC").value.trim(),
+        desc:document.getElementById("gD").value.trim(), members:1, ownerId:A.Auth.user.uid });
+      f.innerHTML=""; A.toast("گنگت ساخته شد 👑","ok"); render();
+    });
+  });
+
+  render();
+  
+
+  /* ── این بخش هنوز فعال نشده ── */
+  A.lockPage({
+    icon: "👥",
+    title: "بخش گنگ‌ها هنوز فعال نشده",
+    text: "گنگ‌ها و کلکتیوها به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+})();
+</script>
+</body>
+</html>

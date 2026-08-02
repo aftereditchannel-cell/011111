@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════════
+     صفحهٔ آهنگ‌ها
+     بالای صفحه: کادر پروفایل آرتیست‌ها (کلیک = فیلتر ترک‌های او)
+     پایین: لیست ترک‌ها با پلیر
+     همه‌چیز خودکار از ساندکلود خوانده می‌شود.
+     ═══════════════════════════════════════════════════ -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | آهنگ‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="preconnect" href="https://w.soundcloud.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <h1 style="font-size:1.2rem;margin:0">آهنگ‌ها 🎧</h1>
+    <span class="sc-badge">☁️ SoundCloud</span>
+  </div>
+  <p class="muted xs" style="margin:0 0 12px" id="sub">در حال گرفتن اطلاعات از ساندکلود…</p>
+
+  <!-- کادر آرتیست‌ها -->
+  <div class="acard-row" id="arow"></div>
+
+  <!-- پروفایل آرتیست انتخاب‌شده -->
+  <div id="apanel"></div>
+
+  <div style="display:flex;gap:8px;margin:12px 0">
+    <button class="btn btn--gold btn--sm" id="shuffleAll" style="flex:1" disabled>🔀 پخش تصادفی</button>
+    <button class="btn btn--sm" id="reshuffle" disabled>↻</button>
+  </div>
+
+  <input class="input" type="search" id="q" placeholder="جستجوی ترک…" style="margin-bottom:14px"/>
+  <div class="card" id="list"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("music");
+
+  var arow   = document.getElementById("arow");
+  var apanel = document.getElementById("apanel");
+  var list   = document.getElementById("list");
+  var q      = document.getElementById("q");
+  var sub    = document.getElementById("sub");
+
+  var artists = [], allTracks = [], order = [];
+  var sel = A.param("artist") || "all";      // آرتیست انتخاب‌شده
+
+  /* اسکلتون */
+  list.innerHTML = "1234".split("").map(function () {
+    return '<div class="trow">' +
+      '<div class="skel" style="width:52px;height:52px;border-radius:14px"></div>' +
+      '<div style="flex:1"><div class="skel" style="height:12px;width:60%"></div>' +
+      '<div class="skel" style="height:10px;width:36%;margin-top:7px"></div></div></div>';
+  }).join("");
+
+  function shuffle(a){
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /** ترک‌های آرتیست انتخاب‌شده */
+  function pool(){
+    return sel === "all" ? allTracks
+      : allTracks.filter(function (t){ return t.artistId === sel; });
+  }
+
+  function visible(){
+    var term = q.value.trim().toLowerCase();
+    var rows = order.filter(function (t){
+      return sel === "all" || t.artistId === sel;
+    });
+    if (!term) return rows;
+    return rows.filter(function (t){
+      return t.title.toLowerCase().indexOf(term) >= 0 ||
+             t.artist.toLowerCase().indexOf(term) >= 0 ||
+             (t.tags || []).join(" ").toLowerCase().indexOf(term) >= 0;
+    });
+  }
+
+  /* ── کادر آرتیست‌ها ── */
+  function renderArtists(){
+    arow.innerHTML =
+      '<button class="abox' + (sel === "all" ? " is-on" : "") + '" data-a="all">' +
+        '<img src="assets/img/logo.png" alt=""/>' +
+        '<strong>همه</strong>' +
+        '<small>' + A.fa(allTracks.length) + ' ترک</small>' +
+      '</button>' +
+      artists.map(function (a){
+        return '<button class="abox' + (sel === a.id ? " is-on" : "") + '" data-a="' + a.id + '">' +
+          '<img src="' + a.photo + '" alt="' + A.esc(a.name) + '" loading="lazy"/>' +
+          '<strong>' + A.esc(a.name) + '</strong>' +
+          '<small>' + A.fa(a.trackCount) + ' ترک</small>' +
+        '</button>';
+      }).join("");
+  }
+
+  /* ── پنل پروفایل آرتیست انتخاب‌شده ── */
+  function renderPanel(){
+    if (sel === "all"){ apanel.innerHTML = ""; return; }
+    var a = A.SC.artist(sel);
+    if (!a){ apanel.innerHTML = ""; return; }
+
+    apanel.innerHTML =
+      '<section class="phead" style="padding:18px 16px;margin-bottom:4px">' +
+        '<img class="avatar avatar--xl" style="margin-inline:auto;width:74px;height:74px"' +
+          ' src="' + a.photo + '" alt=""/>' +
+        '<h2 style="font-size:1.02rem">' + A.esc(a.name) + '</h2>' +
+        '<div class="handle">' +
+          A.esc(a.url.replace("https://soundcloud.com/", "@")) +
+          (a.city ? ' · ' + A.esc(a.city) : '') + '</div>' +
+        (a.bio ? '<p class="bio" style="margin:8px 0">' + A.esc(a.bio) + '</p>' : '') +
+        '<div class="pstats" style="margin:8px 0">' +
+          '<div><b>' + A.nFmt(a.followers) + '</b><small>دنبال‌کننده</small></div>' +
+          '<div><b>' + A.fa(a.trackCount) + '</b><small>ترک</small></div>' +
+          '<div><b>' + A.nFmt(a.plays) + '</b><small>پخش</small></div>' +
+        '</div>' +
+        '<p class="scnote">این آمار از اکانت ساندکلود آرتیست گرفته شده</p>' +
+        /* سه دکمه بالا، یکی پایین */
+        '<div class="pbtn-grid">' +
+          A.platBtn("soundcloud", a.url, "ساندکلود") +
+          A.platBtn("instagram", a.instagram, "اینستاگرام") +
+          A.platBtn("telegram", a.telegram, "تلگرام") +
+          '<div class="pbtn-grid__last">' +
+            A.platBtn("youtube", a.youtube, "یوتیوب") + '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  /* ── لیست ترک‌ها ── */
+  function renderList(){
+    var rows = visible();
+    var now  = A.SC.current;
+
+    if (!rows.length){
+      var a = sel !== "all" ? A.SC.artist(sel) : null;
+      list.innerHTML = A.UI.empty("🎵",
+        q.value ? "ترکی پیدا نشد."
+        : (a ? A.esc(a.name) + " هنوز ترکی منتشر نکرده." : "ترکی موجود نیست."));
+      return;
+    }
+
+    list.innerHTML = rows.map(function (t){
+      var on = now && now.id === t.id;
+      return '<div class="trow' + (on ? " is-playing" : "") + '" data-id="' + t.id + '">' +
+        '<img class="trow__art" src="' + t.cover + '" alt="" loading="lazy"/>' +
+        '<div class="trow__meta"><strong>' + A.esc(t.title) + '</strong>' +
+          '<small>' + A.esc(t.artist) + ' · ' + A.nFmt(t.plays) + ' پخش' +
+          (t.duration ? ' · ' + A.tFmt(t.duration / 1000) : '') + '</small></div>' +
+        '<div class="trow__side">' +
+          (on ? '<span class="eq"><i></i><i></i><i></i></span>'
+              : '<span>❤ ' + A.nFmt(t.likes || 0) + '</span>') +
+        '</div></div>';
+    }).join("");
+  }
+
+  function renderAll(){ renderArtists(); renderPanel(); renderList(); }
+
+  /* ── بارگذاری ── */
+  A.SC.load(function (tracks, arts){
+    allTracks = tracks || [];
+    artists   = arts   || [];
+
+    if (!artists.length || !A.SC.online){
+      sub.textContent = "ارتباط با سرور ساندکلود برقرار نشد.";
+      arow.innerHTML = "";
+      list.className = "";
+      list.innerHTML = A.netError("آهنگ‌ها");
+      return;
+    }
+
+    document.getElementById("shuffleAll").disabled = false;
+    document.getElementById("reshuffle").disabled  = false;
+    sub.innerHTML = A.fa(allTracks.length) + " ترک از " +
+      A.fa(artists.length) + " آرتیست — پخش روی اکانت آرتیست ثبت می‌شود.";
+
+    order = shuffle(allTracks);
+    renderAll();
+  });
+
+  /* انتخاب آرتیست */
+  arow.addEventListener("click", function (e){
+    var btn = e.target.closest(".abox");
+    if (!btn) return;
+    sel = btn.getAttribute("data-a");
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  /* پخش */
+  list.addEventListener("click", function (e){
+    var row = e.target.closest(".trow");
+    if (!row) return;
+    var id = row.getAttribute("data-id"), rows = visible();
+    for (var i = 0; i < rows.length; i++)
+      if (rows[i].id === id){ A.SC.play(rows[i]); return; }
+  });
+
+  document.getElementById("shuffleAll").addEventListener("click", function (){
+    var rows = visible();
+    if (!rows.length) return;
+    A.SC.play(rows[Math.floor(Math.random() * rows.length)]);
+    A.toast("پخش تصادفی 🔀", "ok");
+  });
+
+  document.getElementById("reshuffle").addEventListener("click", function (){
+    order = shuffle(allTracks);
+    renderList();
+    A.toast("ترتیب عوض شد ↻");
+  });
+
+  q.addEventListener("input", A.debounce(renderList, 220));
+
+  window.onScPlay = function (){ renderList(); };
+
+  /* ترک بعدی تصادفی */
+  window.onScFinish = function (){
+    var rows = visible();
+    if (!rows.length) return;
+    var cur = A.SC.current, next, g = 0;
+    do { next = rows[Math.floor(Math.random() * rows.length)]; }
+    while (cur && rows.length > 1 && next.id === cur.id && g++ < 10);
+    A.SC.play(next);
+  };
+})();
+</script>
+</body>
+</html>

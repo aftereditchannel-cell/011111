@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | پروفایل</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("profile");
+
+  var box=document.getElementById("box");
+
+  function render(){
+    var u=A.Auth.user;
+    if(!u){
+      box.innerHTML='<div style="text-align:center;padding:30px 10px">' +
+        '<div style="font-size:3rem">🎤</div>' +
+        '<h2 style="font-size:1.1rem;margin:12px 0 6px">هنوز وارد نشدی</h2>' +
+        '<p class="muted sm" style="margin:0 0 18px">با ساخت حساب می‌تونی ترک آپلود کنی، رأی بدی و توی جدول رنک بالا بیای.</p>' +
+        '<a class="btn btn--gold btn--block" href="auth.html">ورود / ثبت‌نام</a>' +
+        '<a class="btn btn--ghost btn--block" href="settings.html" style="margin-top:10px">⚙️ تنظیمات</a></div>';
+      return;
+    }
+
+    var tracks=A.DB.all("tracks");
+    var mine=tracks.filter(function(t){return t.uploaderId===u.uid;});
+    var liked=tracks.filter(function(t){return (u.likes||[]).indexOf(t.id)>=0;});
+    var follow=A.DB.all("artists").filter(function(a){return (u.following||[]).indexOf(a.id)>=0;});
+
+    box.innerHTML='<section class="phead">' +
+        '<img class="avatar avatar--xl" style="margin-inline:auto" src="'+u.photo+'" alt=""/>' +
+        '<h2>'+A.esc(u.name)+(u.anonymous?" 🕶️":"")+'</h2>' +
+        '<div class="handle">'+A.esc(u.handle)+' · '+A.esc(u.city||"—")+'</div>' +
+        (u.bio?'<p class="bio">'+A.esc(u.bio)+'</p>':'') +
+        '<div class="pstats">' +
+          '<div><b>'+A.fa(mine.length)+'</b><small>ترک</small></div>' +
+          '<div><b>'+A.fa(liked.length)+'</b><small>لایک</small></div>' +
+          '<div><b>'+A.fa(follow.length)+'</b><small>دنبال‌شده</small></div></div>' +
+        '<div class="pactions">' +
+          '<button class="btn btn--gold" id="edit">✏️ ویرایش</button>' +
+          '<a class="btn" href="upload.html">⬆️ آپلود</a>' +
+          '<a class="btn" href="settings.html">⚙️</a></div></section>' +
+      (u.anonymous?'<div class="demobar" style="margin-top:14px"><span>🕶️</span>' +
+        '<span>در حالت ناشناس هستی. برای حفظ دائمی داده‌هایت حساب کامل بساز.</span></div>':'') +
+      '<div id="editBox"></div>' +
+      '<div class="segs" style="margin-top:16px" id="segs">' +
+        '<button class="seg is-on" data-k="tracks">ترک‌های من</button>' +
+        '<button class="seg" data-k="liked">لایک‌شده</button>' +
+        '<button class="seg" data-k="follow">دنبال‌شده</button></div>' +
+      '<div class="card" id="tabBox"></div>';
+
+    var tab="tracks";
+    function paintTab(){
+      var el=document.getElementById("tabBox");
+      if(tab==="tracks") el.innerHTML = mine.length
+        ? mine.map(function(t){return A.UI.trackRow(t,false);}).join("")
+        : A.UI.empty("🎵","هنوز ترکی آپلود نکردی.","آپلود اولین ترک","upload.html");
+      if(tab==="liked") el.innerHTML = liked.length
+        ? liked.map(function(t){return A.UI.trackRow(t,false);}).join("")
+        : A.UI.empty("💔","هنوز چیزی لایک نکردی.");
+      if(tab==="follow") el.innerHTML = follow.length
+        ? follow.map(function(a){
+            return '<a class="trow" href="artist.html?id='+a.id+'">' +
+              '<img class="trow__art" style="border-radius:50%" src="'+(a.photo||A.avatarOf(a.name))+'" alt=""/>' +
+              '<div class="trow__meta"><strong>'+A.esc(a.name)+'</strong>' +
+              '<small>'+A.nFmt(a.followers)+' دنبال‌کننده</small></div>' +
+              '<div class="trow__side">›</div></a>';
+          }).join("")
+        : A.UI.empty("👤","هنوز کسی را دنبال نمی‌کنی.");
+    }
+    paintTab();
+
+    document.getElementById("segs").addEventListener("click",function(e){
+      var b=e.target.closest(".seg"); if(!b) return;
+      tab=b.getAttribute("data-k");
+      A.$$(".seg",e.currentTarget).forEach(function(x){x.classList.remove("is-on");});
+      b.classList.add("is-on"); paintTab();
+    });
+
+    document.getElementById("tabBox").addEventListener("click",function(e){
+      var row=e.target.closest(".trow"); if(!row||row.tagName==="A") return;
+      var id=row.getAttribute("data-id");
+      var arr = tab==="tracks"?mine:liked;
+      for(var i=0;i<arr.length;i++) if(arr[i].id===id){ A.Player.play(arr,i); return; }
+    });
+
+    document.getElementById("edit").addEventListener("click",function(){
+      var eb=document.getElementById("editBox");
+      if(eb.innerHTML){ eb.innerHTML=""; return; }
+      eb.innerHTML='<div class="card" style="margin-top:14px">' +
+        '<div class="field"><label>نام نمایشی</label><input class="input" id="eN" value="'+A.esc(u.name)+'"/></div>' +
+        '<div class="field"><label>یوزرنیم</label><input class="input" id="eH" dir="ltr" value="'+A.esc(u.handle)+'"/></div>' +
+        '<div class="field"><label>شهر</label><input class="input" id="eC" value="'+A.esc(u.city||"")+'"/></div>' +
+        '<div class="field"><label>بیو</label><textarea class="input" id="eB">'+A.esc(u.bio||"")+'</textarea></div>' +
+        '<button class="btn btn--gold btn--block" id="eSave">ذخیره</button></div>';
+      document.getElementById("eSave").addEventListener("click",function(){
+        var nm=document.getElementById("eN").value.trim()||u.name;
+        A.Auth.update({
+          name:nm, handle:document.getElementById("eH").value.trim()||u.handle,
+          city:document.getElementById("eC").value.trim(),
+          bio:document.getElementById("eB").value.trim(),
+          photo:A.avatarOf(nm)
+        });
+        A.toast("پروفایل به‌روز شد ✅","ok");
+        setTimeout(function(){ location.reload(); },500);
+      });
+    });
+  }
+  render();
+  
+
+  /* ── این بخش هنوز فعال نشده: محتوا بلور می‌شود و دیالوگ نمایش داده می‌شود ── */
+  A.lockPage({
+    icon: "🙍",
+    title: "بخش پروفایل هنوز فعال نشده",
+    text: "حساب کاربری و پروفایل به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+})();
+</script>
+</body>
+</html>

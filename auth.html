@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | ورود</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("profile");
+
+  var box=document.getElementById("box");
+  if (A.Auth.isIn){ location.replace("profile.html"); return; }
+  var mode="in";
+
+  function render(){
+    box.innerHTML=
+      '<div style="text-align:center;margin:10px 0 22px">' +
+        '<img src="assets/img/logo.png" alt="" style="width:74px;height:74px;border-radius:22px;margin-inline:auto;box-shadow:var(--sh-gold)"/>' +
+        '<h1 style="font-size:1.16rem;margin:14px 0 4px">به ۰۱۱ رپ خوش اومدی</h1>' +
+        '<p class="muted sm" style="margin:0">وارد شو تا لایک کنی، رأی بدی و توی میتینگ‌ها ثبت‌نام کنی.</p></div>' +
+      '<div class="segs"><button class="seg'+(mode==="in"?" is-on":"")+'" id="sIn">ورود</button>' +
+        '<button class="seg'+(mode==="up"?" is-on":"")+'" id="sUp">ثبت‌نام</button></div>' +
+      '<form class="card" id="f">' +
+        (mode==="up"?'<div class="field"><label>نام نمایشی</label><input class="input" id="nm" placeholder="اسم هنری‌ات"/></div>':'') +
+        (mode==="up"?'<div class="field"><label>یوزرنیم</label><input class="input" id="hd" dir="ltr" placeholder="@username"/></div>':'') +
+        '<div class="field"><label>ایمیل</label><input class="input" type="email" id="em" dir="ltr" placeholder="you@mail.com"/></div>' +
+        '<div class="field"><label>رمز عبور</label><input class="input" type="password" id="pw" dir="ltr" placeholder="حداقل ۶ کاراکتر"/></div>' +
+        '<button class="btn btn--gold btn--block" type="submit">'+(mode==="in"?"ورود":"ساخت حساب")+'</button>' +
+        '<div style="display:flex;align-items:center;gap:10px;margin:14px 0 8px">' +
+          '<hr style="flex:1;border:0;border-top:1px solid var(--stroke)"/>' +
+          '<small class="muted xs">یا</small>' +
+          '<hr style="flex:1;border:0;border-top:1px solid var(--stroke)"/></div>' +
+        '<button class="btn btn--ghost btn--block" type="button" id="anon">🕶️ ادامه به‌صورت ناشناس</button>' +
+      '</form>' +
+      '<div class="card" style="margin-top:14px">' +
+        '<strong class="sm">🕶️ حالت ناشناس چیست؟</strong>' +
+        '<p class="muted xs" style="margin:6px 0 0">بدون ایمیل و رمز وارد می‌شوی؛ می‌تونی رأی بدی، لایک کنی و کامنت بذاری، اما اسمت «ناشناس» نمایش داده می‌شه.</p></div>';
+
+    document.getElementById("sIn").addEventListener("click",function(e){e.preventDefault();mode="in";render();});
+    document.getElementById("sUp").addEventListener("click",function(e){e.preventDefault();mode="up";render();});
+
+    document.getElementById("f").addEventListener("submit",function(e){
+      e.preventDefault();
+      var em=document.getElementById("em").value.trim();
+      var pw=document.getElementById("pw").value;
+      if(!em||em.indexOf("@")<0) return A.toast("ایمیل معتبر وارد کن.","err");
+      if(pw.length<6) return A.toast("رمز عبور حداقل ۶ کاراکتر باشد.","err");
+      try{
+        if(mode==="up"){
+          var nm=document.getElementById("nm").value.trim();
+          if(!nm) return A.toast("اسم هنری‌ات را وارد کن.","err");
+          A.Auth.signUp(em,pw,nm,document.getElementById("hd").value.trim());
+          A.toast("خوش اومدی! حسابت ساخته شد 🎉","ok");
+        } else {
+          A.Auth.signIn(em,pw);
+          A.toast("خوش برگشتی 👊","ok");
+        }
+        setTimeout(function(){ location.href="profile.html"; },600);
+      }catch(err){ A.toast(err.message,"err"); }
+    });
+
+    document.getElementById("anon").addEventListener("click",function(){
+      A.Auth.signInAnon();
+      A.toast("وارد حالت ناشناس شدی 🕶️","ok");
+      setTimeout(function(){ location.href="index.html"; },600);
+    });
+  }
+  render();
+  
+
+  /* ── ثبت‌نام داخل سایت هنوز فعال نشده ── */
+  A.lockPage({
+    icon: "\u{1F510}",
+    title: "ثبت‌نام هنوز فعال نشده",
+    text: "ساخت حساب کاربری به دلیل هزینهٔ سرورها هنوز فعال نشده است. فعلاً ثبت‌نام میتینگ از طریق لینک زیر انجام می‌شود.",
+    links: true
+  });
+
+})();
+</script>
+</body>
+</html>

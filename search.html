@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- جستجو — روی ترک‌ها، آرتیست‌ها و میتینگ‌ها -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | جستجو</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="preconnect" href="https://w.soundcloud.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view">
+  <h1 style="font-size:1.2rem;margin:0 0 12px">جستجو 🔍</h1>
+  <input class="input" type="search" id="q"
+         placeholder="اسم ترک، آرتیست یا میتینگ…" autofocus/>
+  <div id="box" style="margin-top:14px"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("");
+
+  var q = document.getElementById("q");
+  var box = document.getElementById("box");
+  var tracks = [], artists = [], ready = false;
+
+  box.innerHTML = '<div class="skel" style="height:70px;border-radius:18px"></div>';
+
+  A.SC.load(function (t, a) {
+    tracks = t || []; artists = a || [];
+    ready = true;
+    if (!artists.length || !A.SC.online) { box.innerHTML = A.netError("اطلاعات جستجو"); return; }
+    render();
+  });
+
+  function render() {
+    if (!ready) return;
+    var term = q.value.trim().toLowerCase();
+
+    if (!term) {
+      /* پیشنهاد اولیه: آرتیست‌ها */
+      box.innerHTML =
+        '<p class="muted xs" style="margin:0 0 10px">چیزی بنویس، یا یکی از آرتیست‌ها را بزن:</p>' +
+        '<div class="hscroll">' + artists.map(function (a) {
+          return '<a class="acard" href="music.html?artist=' + a.id + '">' +
+            '<img class="acard__img" src="' + a.photo + '" alt="" loading="lazy"/>' +
+            '<h4>' + A.esc(a.name) + '</h4>' +
+            '<small>' + A.fa(a.trackCount) + ' ترک</small></a>';
+        }).join("") + '</div>';
+      return;
+    }
+
+    var t = tracks.filter(function (x) {
+      return x.title.toLowerCase().indexOf(term) >= 0 ||
+             (x.artist || "").toLowerCase().indexOf(term) >= 0 ||
+             (x.tags || []).join(" ").toLowerCase().indexOf(term) >= 0;
+    });
+    var a = artists.filter(function (x) {
+      return x.name.toLowerCase().indexOf(term) >= 0 ||
+             (x.city || "").toLowerCase().indexOf(term) >= 0;
+    });
+    var m = A.DB.all("meetings").filter(function (x) {
+      return x.title.toLowerCase().indexOf(term) >= 0 ||
+             (x.venue || "").toLowerCase().indexOf(term) >= 0;
+    });
+
+    if (!t.length && !a.length && !m.length) {
+      box.innerHTML = A.UI.empty("🔍", "نتیجه‌ای برای «" + A.esc(q.value.trim()) + "» پیدا نشد.");
+      return;
+    }
+
+    var h = "";
+
+    if (a.length) {
+      h += '<strong class="sm">🎤 آرتیست‌ها</strong><div class="card">' +
+        a.map(function (x) {
+          return '<a class="trow" href="music.html?artist=' + x.id + '">' +
+            '<img class="trow__art" style="border-radius:50%" src="' + x.photo + '" alt=""/>' +
+            '<div class="trow__meta"><strong>' + A.esc(x.name) + '</strong>' +
+            '<small>' + A.fa(x.trackCount) + ' ترک · ' + A.nFmt(x.followers) + ' دنبال‌کننده</small></div>' +
+            '<div class="trow__side">›</div></a>';
+        }).join("") + '</div>';
+    }
+
+    if (t.length) {
+      h += '<strong class="sm" style="display:block;margin-top:14px">🎵 ترک‌ها (' +
+        A.fa(t.length) + ')</strong><div class="card" id="tRes">' +
+        t.slice(0, 20).map(function (x) {
+          return '<div class="trow" data-id="' + x.id + '">' +
+            '<img class="trow__art" src="' + x.cover + '" alt="" loading="lazy"/>' +
+            '<div class="trow__meta"><strong>' + A.esc(x.title) + '</strong>' +
+            '<small>' + A.esc(x.artist) + ' · ' + A.nFmt(x.plays) + ' پخش</small></div>' +
+            '<div class="trow__side">▶</div></div>';
+        }).join("") + '</div>';
+    }
+
+    if (m.length) {
+      h += '<strong class="sm" style="display:block;margin-top:14px">📅 میتینگ‌ها</strong>' +
+        '<div class="card">' + m.map(function (x) {
+          return '<a class="trow" href="meeting.html?id=' + x.id + '">' +
+            '<div class="trow__meta"><strong>' + A.esc(x.title) + '</strong>' +
+            '<small>' + A.esc(x.venue) + '</small></div>' +
+            '<div class="trow__side">›</div></a>';
+        }).join("") + '</div>';
+    }
+
+    box.innerHTML = h;
+
+    var tr = document.getElementById("tRes");
+    if (tr) tr.addEventListener("click", function (e) {
+      var row = e.target.closest(".trow");
+      if (!row) return;
+      var id = row.getAttribute("data-id");
+      for (var i = 0; i < t.length; i++)
+        if (t[i].id === id) { A.SC.play(t[i]); return; }
+    });
+  }
+
+  q.addEventListener("input", A.debounce(render, 220));
+})();
+</script>
+</body>
+</html>

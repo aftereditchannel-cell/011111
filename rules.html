@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════════════════
+     قوانین لیبل ۰۱۱ — صفحهٔ مستقل
+     کاملاً جدا از سایت اصلی؛ با دابل‌کلیک باز می‌شود.
+     ═══════════════════════════════════════════════════════════ -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>قوانین لیبل ۰۱۱</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<style>
+/* ═══════ توکن‌ها ═══════ */
+:root{
+  --gold-1:#ffd166; --gold-2:#f0a500; --gold-3:#b87407;
+  --red:#ff4d6d; --green:#2ee6a8; --violet:#7c5cff; --amber:#ff8a3d;
+  --bg:#08080a; --bg-2:#0d0d11;
+  --surface:rgba(255,255,255,.045);
+  --surface-2:rgba(255,255,255,.075);
+  --stroke:rgba(255,255,255,.10);
+  --stroke-2:rgba(255,255,255,.18);
+  --txt:#f4f4f6; --txt-2:#a9a9b8; --txt-3:#6f6f80;
+  --grad-gold:linear-gradient(135deg,#ffd166 0%,#f0a500 55%,#b87407 100%);
+  --r-md:18px; --r-lg:26px; --r-xl:34px; --r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;padding:0;
+  /* فونت ایموجی به‌عنوان پشتیبان تا روی همهٔ سیستم‌ها درست نمایش داده شود */
+  font-family:Vazirmatn,system-ui,-apple-system,"Segoe UI",
+              "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+  background:var(--bg);color:var(--txt);
+  line-height:2.05;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 520px at 88% -8%, rgba(240,165,0,.16), transparent 60%),
+    radial-gradient(900px 520px at 6% 8%, rgba(124,92,255,.14), transparent 62%),
+    radial-gradient(760px 520px at 50% 108%, rgba(34,211,238,.08), transparent 60%),
+    var(--bg);
+}
+.wrap{max-width:760px;margin-inline:auto;padding:0 18px 90px}
+
+/* ═══════ هدر ═══════ */
+.hero{
+  position:relative;overflow:hidden;text-align:center;
+  margin:22px 0 26px;padding:40px 24px 34px;
+  border-radius:var(--r-xl);
+  background:linear-gradient(160deg,#171727 0%,#0b0b12 100%);
+  border:1px solid var(--stroke);
+  box-shadow:0 14px 44px rgba(0,0,0,.55);
+}
+.hero::after{
+  content:"";position:absolute;width:300px;height:300px;border-radius:50%;
+  top:-150px;inset-inline-end:-120px;
+  background:radial-gradient(circle,rgba(240,165,0,.40),transparent 66%);
+  filter:blur(16px);
+}
+.hero img{
+  width:82px;height:82px;border-radius:25px;
+  box-shadow:0 10px 30px rgba(240,165,0,.32);position:relative;
+}
+.hero h1{
+  position:relative;margin:16px 0 6px;font-size:1.7rem;font-weight:900;
+  background:var(--grad-gold);-webkit-background-clip:text;
+  background-clip:text;color:transparent;
+}
+.hero p{position:relative;margin:0;color:var(--txt-2);font-size:.9rem}
+.hero .meta{
+  position:relative;display:inline-flex;align-items:center;gap:7px;
+  margin-top:14px;padding:6px 14px;border-radius:var(--r-pill);
+  background:rgba(240,165,0,.13);border:1px solid rgba(240,165,0,.30);
+  color:var(--gold-1);font-size:.72rem;font-weight:700;
+}
+
+/* ═══════ اعلان مهم ═══════ */
+.notice{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:20px 22px;margin-bottom:26px;
+  border-radius:var(--r-lg);
+  background:linear-gradient(135deg,rgba(46,230,168,.12),rgba(46,230,168,.05));
+  border:1px solid rgba(46,230,168,.32);
+}
+.notice__ic{font-size:1.7rem;line-height:1.4;flex:0 0 auto}
+.notice h2{margin:0 0 6px;font-size:1.02rem;color:#8ff3d0;font-weight:800}
+.notice p{margin:0;font-size:.87rem;color:#cfeee2}
+
+/* ═══════ فهرست ═══════ */
+.toc{
+  padding:18px 20px;margin-bottom:28px;
+  border-radius:var(--r-lg);
+  background:var(--surface);border:1px solid var(--stroke);
+}
+.toc strong{display:block;margin-bottom:10px;font-size:.9rem}
+.toc__grid{display:flex;flex-wrap:wrap;gap:8px}
+.toc a{
+  padding:7px 13px;border-radius:var(--r-pill);
+  background:var(--surface-2);border:1px solid var(--stroke);
+  color:var(--txt-2);font-size:.76rem;font-weight:600;
+  text-decoration:none;transition:.2s var(--ease);
+}
+.toc a:hover{background:rgba(240,165,0,.14);border-color:rgba(240,165,0,.35);color:var(--gold-1)}
+
+/* ═══════ بخش‌ها ═══════ */
+.sec{margin-bottom:30px;scroll-margin-top:16px}
+.sec__head{
+  display:flex;align-items:center;gap:11px;margin-bottom:14px;
+  padding-bottom:11px;border-bottom:1px solid var(--stroke);
+}
+.sec__ic{
+  width:42px;height:42px;flex:0 0 auto;
+  display:grid;place-items:center;border-radius:13px;
+  background:var(--surface-2);border:1px solid var(--stroke);
+  font-size:1.25rem;
+}
+.sec__head h2{margin:0;font-size:1.08rem;font-weight:800}
+.sec__head small{display:block;color:var(--txt-3);font-size:.72rem;font-weight:500}
+
+/* ═══════ کارت قانون ═══════ */
+.rule{
+  position:relative;
+  padding:16px 18px 16px 18px;margin-bottom:11px;
+  border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--stroke);
+  border-inline-start:3px solid var(--stroke-2);
+  transition:.2s var(--ease);
+}
+.rule:hover{background:var(--surface-2)}
+.rule__t{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.rule__t b{font-size:.92rem;font-weight:800}
+.rule p{margin:0;font-size:.84rem;color:var(--txt-2)}
+
+/* رنگ‌بندی بر اساس شدت */
+.rule--ban{border-inline-start-color:var(--red);
+  background:linear-gradient(90deg,rgba(255,77,109,.07),var(--surface) 60%)}
+.rule--ban .rule__t b{color:#ff9db1}
+.rule--ok{border-inline-start-color:var(--green);
+  background:linear-gradient(90deg,rgba(46,230,168,.07),var(--surface) 60%)}
+.rule--ok .rule__t b{color:#8ff3d0}
+.rule--warn{border-inline-start-color:var(--amber);
+  background:linear-gradient(90deg,rgba(255,138,61,.07),var(--surface) 60%)}
+.rule--warn .rule__t b{color:#ffb98a}
+.rule--info{border-inline-start-color:var(--violet);
+  background:linear-gradient(90deg,rgba(124,92,255,.07),var(--surface) 60%)}
+.rule--info .rule__t b{color:#c9bcff}
+
+.tag{
+  display:inline-block;padding:2px 9px;border-radius:var(--r-pill);
+  font-size:.64rem;font-weight:700;margin-inline-start:auto;flex:0 0 auto;
+}
+.tag--ban{background:rgba(255,77,109,.16);border:1px solid rgba(255,77,109,.34);color:#ff9db1}
+.tag--ok{background:rgba(46,230,168,.14);border:1px solid rgba(46,230,168,.32);color:#8ff3d0}
+.tag--warn{background:rgba(255,138,61,.14);border:1px solid rgba(255,138,61,.32);color:#ffb98a}
+
+/* ═══════ جدول تخلف ═══════ */
+.tbl{
+  width:100%;border-collapse:collapse;margin-top:6px;
+  border-radius:var(--r-md);overflow:hidden;
+  background:var(--surface);border:1px solid var(--stroke);
+  font-size:.82rem;
+}
+.tbl th,.tbl td{padding:11px 13px;text-align:right;border-bottom:1px solid var(--stroke)}
+.tbl th{background:var(--surface-2);font-size:.78rem;font-weight:800;color:var(--gold-1)}
+.tbl tr:last-child td{border-bottom:0}
+
+/* ═══════ پذیرش ═══════ */
+.accept{
+  margin-top:34px;padding:26px 24px;text-align:center;
+  border-radius:var(--r-lg);
+  background:linear-gradient(160deg,rgba(240,165,0,.11),rgba(240,165,0,.03));
+  border:1px solid rgba(240,165,0,.30);
+}
+.accept h3{margin:0 0 8px;font-size:1.02rem}
+.accept p{margin:0 0 16px;font-size:.84rem;color:var(--txt-2)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 26px;border-radius:var(--r-pill);
+  font-weight:800;font-size:.88rem;text-decoration:none;
+  background:var(--grad-gold);color:#181206;border:0;cursor:pointer;
+  box-shadow:0 10px 30px rgba(240,165,0,.26);
+  transition:transform .18s var(--ease);
+}
+.btn:active{transform:scale(.95)}
+.btn--ghost{
+  background:transparent;color:var(--txt);
+  border:1px solid var(--stroke-2);box-shadow:none;
+}
+
+/* ═══════ فوتر ═══════ */
+.foot{
+  margin-top:34px;padding-top:20px;text-align:center;
+  border-top:1px solid var(--stroke);
+  color:var(--txt-3);font-size:.75rem;
+}
+.foot b{color:var(--gold-1)}
+
+/* ═══════ چاپ ═══════ */
+@media print{
+  body{background:#fff;color:#000}
+  body::before,.toc,.accept .btn{display:none}
+  .rule,.sec,.hero,.notice,.tbl{break-inside:avoid;border-color:#ccc}
+  .hero h1{color:#000;-webkit-text-fill-color:#000}
+}
+@media (max-width:520px){
+  .hero{padding:32px 18px 28px}
+  .hero h1{font-size:1.36rem}
+  .wrap{padding:0 14px 70px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="padding-top:16px">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;
+       padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.06);
+       border:1px solid rgba(255,255,255,.12);color:#a9a9b8;font-size:.8rem;
+       text-decoration:none">‹ برگشت به سایت</a>
+  </div>
+
+  <!-- ═══ هدر ═══ -->
+  <header class="hero">
+    <img src="assets/img/logo.png" alt="۰۱۱"/>
+    <h1>قوانین لیبل ۰۱۱</h1>
+    <p>میتینگ رپ طبرستان · آمل — مازندران</p>
+    <span class="meta">📜 نسخهٔ ۱.۰ — مرداد ۱۴۰۵</span>
+  </header>
+
+  <!-- ═══ اعلان مهم ═══ -->
+  <div class="notice">
+    <div class="notice__ic">✅</div>
+    <div>
+      <h2>اجازهٔ پخش آثار از سایت لیبل</h2>
+      <p>
+        از این پس <b>اجازهٔ پخش کارهای آرتیست‌های لیبل از طریق سایت رسمی ۰۱۱</b>
+        داده می‌شود. آهنگ‌ها مستقیم از اکانت ساندکلود خودِ آرتیست پخش می‌شوند،
+        پس آمار پخش، لایک و کامنت همه روی اکانت خودش ثبت می‌شود و مالکیت اثر
+        کاملاً نزد آرتیست باقی می‌ماند.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ فهرست ═══ -->
+  <nav class="toc">
+    <strong>📑 فهرست</strong>
+    <div class="toc__grid">
+      <a href="#s1">۱. محتوا</a>
+      <a href="#s2">۲. همکاری</a>
+      <a href="#s3">۳. پخش و انتشار</a>
+      <a href="#s4">۴. رفتار</a>
+      <a href="#s5">۵. میتینگ و اجرا</a>
+      <a href="#s6">۶. مالی و حقوقی</a>
+      <a href="#s7">۷. تخلف</a>
+      <a href="#s8">۸. عضویت و خروج</a>
+    </div>
+  </nav>
+
+  <!-- ═══ ۱) محتوا ═══ -->
+  <section class="sec" id="s1">
+    <div class="sec__head">
+      <div class="sec__ic">🎤</div>
+      <div><h2>۱. قوانین محتوا</h2>
+        <small>چه چیزی روی پیج لیبل منتشر می‌شود</small></div>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 ناموسی زدن</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>هرگونه توهین ناموسی و فحش خانوادگی در ترک‌هایی که با نام لیبل منتشر
+         می‌شوند، ممنوع است.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 زدن قومیتی</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>توهین به قوم، زبان، شهر یا نژاد در هیچ شرایطی روی پیج لیبل جایی ندارد —
+         حتی در قالب بتل.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 محتوای سیاسی</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>خواندن سیاسی روی پیج و سایت لیبل ممنوع است. دلیلش امنیت خود آرتیست و
+         بقای لیبل است، نه محدود کردن حرف.</p>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ انتشار شخصی</b><span class="tag tag--ok">آزاد</span></div>
+      <p>پخش تکی و شخصی این نوع کارها روی پیج خودت <b>کاملاً آزاد</b> است.
+         محدودیت فقط برای پیج و سایت رسمی لیبل است.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ فحش و اسلنگ سنگین</b><span class="tag tag--warn">با شرط</span></div>
+      <p>در بتل و دیس مجاز است، ولی نسخهٔ منتشرشده روی پیج لیبل باید
+         برچسب سنی بخورد یا نسخهٔ سانسورشده داشته باشد.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 تشویق به مواد و خشونت واقعی</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>روایت و قصه‌گویی آزاد است، اما تبلیغ مستقیم مواد یا دعوت به خشونت
+         واقعی روی پیج لیبل منتشر نمی‌شود.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 کپی و سرقت اثر</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>بیت بدون اجازه، ورس دزدی یا کپی ملودی = اخراج مستقیم. اسم بیت‌میکر
+         همیشه باید ذکر شود.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۲) همکاری ═══ -->
+  <section class="sec" id="s2">
+    <div class="sec__head">
+      <div class="sec__ic">🤝</div>
+      <div><h2>۲. همکاری و فیچرینگ</h2>
+        <small>با چه کسی کار کنیم، با چه کسی نه</small></div>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 کار با لیبل مخالف</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>همکاری با لیبل‌هایی که با ۰۱۱ بِیف یا مخالفت علنی دارند ممنوع است.
+         لیست این لیبل‌ها را مدیریت اعلام می‌کند.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ فیچ با آرتیست بیرونی</b><span class="tag tag--warn">با هماهنگی</span></div>
+      <p>کار با آرتیست‌های خارج از لیبل آزاد است، فقط قبلش به مدیریت خبر بده
+         تا تداخل یا مشکلی پیش نیاید.</p>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ فیچ داخل لیبل</b><span class="tag tag--ok">تشویق می‌شود</span></div>
+      <p>همکاری بین بچه‌های خود ۰۱۱ آزاد و مورد حمایت است — هزینهٔ استودیو و
+         ادیت هم کمک می‌شود.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ عضویت هم‌زمان در لیبل دیگر</b></div>
+      <p>عضویت هم‌زمان در لیبل دیگر پذیرفته نیست. اگر جای دیگری قرارداد داری،
+         قبل از پیوستن اعلام کن.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۳) پخش و انتشار ═══ -->
+  <section class="sec" id="s3">
+    <div class="sec__head">
+      <div class="sec__ic">📢</div>
+      <div><h2>۳. پخش و انتشار</h2>
+        <small>قوانین سایت، ساندکلود و شبکه‌های اجتماعی</small></div>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ پخش از سایت لیبل</b><span class="tag tag--ok">مجاز</span></div>
+      <p>از این پس کارهای آرتیست‌های لیبل روی سایت رسمی پخش می‌شود. پخش مستقیم
+         از ساندکلود خودت است، پس آمارت بالا می‌رود.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ مالکیت اثر</b></div>
+      <p>لیبل هیچ ادعای مالکیتی روی آثار ندارد. کار مال خودت است؛ لیبل فقط
+         پخش، تبلیغ و اجرا را پشتیبانی می‌کند.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ حذف اثر از سایت</b><span class="tag tag--warn">هر زمان</span></div>
+      <p>هر وقت بخواهی می‌توانی درخواست حذف کارت از سایت را بدهی — بدون
+         توضیح و بدون شرط.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ تگ و معرفی</b></div>
+      <p>در توضیح کارهایی که با حمایت لیبل منتشر می‌شوند، نام
+         <b>۰۱۱ / 011 Family</b> ذکر شود.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ زمان انتشار</b><span class="tag tag--warn">هماهنگی</span></div>
+      <p>برای انتشار کار بزرگ (آلبوم یا موزیک‌ویدئو) تاریخش را هماهنگ کن تا
+         با کار بقیه تداخل نکند.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۴) رفتار ═══ -->
+  <section class="sec" id="s4">
+    <div class="sec__head">
+      <div class="sec__ic">🫱</div>
+      <div><h2>۴. رفتار و اخلاق</h2>
+        <small>چطور با هم و با بقیه رفتار کنیم</small></div>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 بِیف داخلی علنی</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>اختلاف بین بچه‌های لیبل داخل گروه حل می‌شود، نه در استوری و کامنت
+         و جلوی چشم بقیه.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 بی‌احترامی به مخاطب</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>توهین به فالوورها، کامنت‌گذارها و کسانی که میتینگ می‌آیند، به‌هیچ‌وجه
+         قابل قبول نیست.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ نمایندگی برند</b></div>
+      <p>وقتی اسم ۰۱۱ رویت است، رفتارت پای کل مجموعه نوشته می‌شود.
+         هوای اسم لیبل را داشته باش.</p>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ حمایت از هم</b><span class="tag tag--ok">انتظار می‌رود</span></div>
+      <p>کار بچه‌های لیبل را استوری کن، لایک کن، پخش کن. رشد جمعی از رشد
+         تکی سریع‌تر است.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۵) میتینگ ═══ -->
+  <section class="sec" id="s5">
+    <div class="sec__head">
+      <div class="sec__ic">🎪</div>
+      <div><h2>۵. میتینگ و اجرای زنده</h2>
+        <small>قوانین حضور و اجرا</small></div>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ تعهد حضور</b><span class="tag tag--warn">مهم</span></div>
+      <p>اگر برای اجرا اسم دادی، حتماً بیا. نیامدن بدون خبر یعنی خراب شدن
+         برنامهٔ همه.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ آماده بودن اجرا</b></div>
+      <p>ترک اجرا و بیت را از قبل آماده و تحویل بده تا شب اجرا مشکل صدا
+         پیش نیاید.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 مواد و مشروب در میتینگ</b><span class="tag tag--ban">ممنوع</span></div>
+      <p>مصرف در محل برگزاری کاملاً ممنوع است — هم برای آرتیست، هم مخاطب.
+         امنیت میتینگ از همه‌چیز مهم‌تر است.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 درگیری فیزیکی</b><span class="tag tag--ban">اخراج فوری</span></div>
+      <p>هر نوع دعوا در میتینگ = اخراج بدون بحث. بتل روی استیج تمام می‌شود،
+         نه بیرونش.</p>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ بتل روی استیج</b><span class="tag tag--ok">آزاد</span></div>
+      <p>دیس و بتل روی استیج بخشی از فرهنگ رپ است — تا وقتی به قانون‌های
+         بخش ۱ پایبند باشی.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۶) مالی ═══ -->
+  <section class="sec" id="s6">
+    <div class="sec__head">
+      <div class="sec__ic">💰</div>
+      <div><h2>۶. مالی و حقوقی</h2>
+        <small>پول، هزینه و مسئولیت</small></div>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ درآمد اجرا</b></div>
+      <p>تقسیم درآمد هر میتینگ قبل از برگزاری شفاف اعلام و توافق می‌شود.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ هزینهٔ تولید</b></div>
+      <p>استودیو، میکس‌ومستر، کاورآرت و ادیت — هر پروژه جدا توافق می‌شود.
+         چیزی تحمیل نمی‌شود.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ مسئولیت حقوقی</b><span class="tag tag--warn">شخصی</span></div>
+      <p>مسئولیت قانونی محتوای هر اثر با خودِ آرتیست است. لیبل فقط بستر
+         پخش و اجرا فراهم می‌کند.</p>
+    </div>
+
+    <div class="rule rule--ban">
+      <div class="rule__t"><b>🚫 استفاده تجاری از نام لیبل</b><span class="tag tag--ban">بدون اجازه ممنوع</span></div>
+      <p>فروش محصول، تبلیغ یا قرارداد با اسم ۰۱۱ فقط با اجازهٔ کتبی مدیریت.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۷) تخلف ═══ -->
+  <section class="sec" id="s7">
+    <div class="sec__head">
+      <div class="sec__ic">⚖️</div>
+      <div><h2>۷. تخلف و جریمه</h2>
+        <small>اگر قانونی زیر پا گذاشته شود</small></div>
+    </div>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>مرحله</th><th>نتیجه</th><th>توضیح</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>⚠️ بار اول</td><td>تذکر</td><td>خصوصی تذکر داده می‌شود</td></tr>
+        <tr><td>🟠 بار دوم</td><td>تعلیق موقت</td><td>یک میتینگ اجرا نداری</td></tr>
+        <tr><td>🔴 بار سوم</td><td>حذف از لیبل</td><td>آثار از پیج و سایت برداشته می‌شود</td></tr>
+        <tr><td>⛔ تخلف سنگین</td><td>اخراج فوری</td><td>سرقت اثر، درگیری فیزیکی، خیانت به تیم</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule rule--info" style="margin-top:12px">
+      <div class="rule__t"><b>ℹ️ حق دفاع</b></div>
+      <p>قبل از هر تصمیمی، آرتیست حق دارد توضیح بدهد. تصمیم نهایی با
+         شورای لیبل است، نه یک نفر.</p>
+    </div>
+  </section>
+
+  <!-- ═══ ۸) عضویت ═══ -->
+  <section class="sec" id="s8">
+    <div class="sec__head">
+      <div class="sec__ic">🚪</div>
+      <div><h2>۸. عضویت و خروج</h2>
+        <small>ورود و خروج از لیبل</small></div>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ شرایط عضویت</b></div>
+      <p>حداقل ۳ ترک منتشرشده، فعال بودن، و پذیرش همین قوانین.
+         سن زیر ۱۸ سال با اجازهٔ خانواده.</p>
+    </div>
+
+    <div class="rule rule--ok">
+      <div class="rule__t"><b>✅ خروج آزاد</b><span class="tag tag--ok">هر زمان</span></div>
+      <p>هر وقت خواستی می‌توانی بروی. فقط قبلش خبر بده تا کارهای در جریان
+         نصفه نماند. درِ برگشت هم باز است.</p>
+    </div>
+
+    <div class="rule rule--warn">
+      <div class="rule__t"><b>⚠️ بعد از خروج</b><span class="tag tag--warn">توجه</span></div>
+      <p>بعد از خروج، استفاده از نام و لوگوی ۰۱۱ مجاز نیست. آثار مشترک
+         با توافق طرفین سر جایشان می‌مانند.</p>
+    </div>
+
+    <div class="rule rule--info">
+      <div class="rule__t"><b>ℹ️ به‌روزرسانی قوانین</b></div>
+      <p>این قوانین ممکن است تغییر کند. هر تغییری از قبل به همه اطلاع
+         داده می‌شود.</p>
+    </div>
+  </section>
+
+  <!-- ═══ پذیرش ═══ -->
+  <div class="accept">
+    <h3>✍️ پذیرش قوانین</h3>
+    <p>با عضویت در لیبل ۰۱۱ و انتشار اثر از طریق سایت رسمی،
+       این قوانین را خوانده و پذیرفته‌ای.</p>
+    <button class="btn" onclick="window.print()">🖨️ چاپ / ذخیرهٔ PDF</button>
+    <button class="btn btn--ghost" id="copy" style="margin-inline-start:8px">📋 کپی متن</button>
+  </div>
+
+  <!-- ═══ فوتر ═══ -->
+  <footer class="foot">
+    <p><b>۰۱۱ فمیلی</b> — میتینگ رپ طبرستان<br/>
+       آمل · مازندران — نسخهٔ ۱.۰ (مرداد ۱۴۰۵)</p>
+  </footer>
+
+</div>
+
+<script>
+/* کپی متن کامل قوانین */
+document.getElementById("copy").addEventListener("click", function () {
+  var out = ["قوانین لیبل ۰۱۱\n"];
+  document.querySelectorAll(".sec").forEach(function (s) {
+    out.push("\n" + s.querySelector("h2").textContent.trim());
+    s.querySelectorAll(".rule").forEach(function (r) {
+      var t = r.querySelector("b").textContent.trim();
+      var p = r.querySelector("p").textContent.replace(/\s+/g, " ").trim();
+      out.push("• " + t + " — " + p);
+    });
+  });
+  var txt = out.join("\n");
+  var done = function () {
+    var b = document.getElementById("copy");
+    var old = b.textContent;
+    b.textContent = "✅ کپی شد";
+    setTimeout(function () { b.textContent = old; }, 1800);
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, done);
+  else {
+    var ta = document.createElement("textarea");
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    ta.remove(); done();
+  }
+});
+</script>
+</body>
+</html>

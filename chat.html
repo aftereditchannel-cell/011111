@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | چت</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><h1 style="font-size:1.2rem;margin:0 0 14px">چت 💬</h1><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("");
+
+  /* ── این بخش هنوز فعال نشده (قبل از هر return زودهنگام) ── */
+  A.lockPage({
+    icon: "💬",
+    title: "بخش چت هنوز فعال نشده",
+    text: "گفتگوی بین کاربران به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+  var box=document.getElementById("box");
+  if(!A.Auth.isIn){
+    box.innerHTML=A.UI.empty("🔒","برای چت باید وارد شوی.","ورود / ثبت‌نام","auth.html");
+    return;
+  }
+  var chats=A.DB.all("chats");
+  box.innerHTML = chats.length
+    ? '<div class="card">'+chats.map(function(c){
+        return '<a class="chat-item" href="chat-room.html?id='+c.id+'">' +
+          '<div class="gcard__logo" style="width:44px;height:44px;font-size:1.1rem">'+(c.emoji||"💬")+'</div>' +
+          '<div class="chat-item__b"><strong>'+A.esc(c.name)+'</strong><p>'+A.esc(c.last||"")+'</p></div>' +
+          '<small class="muted xs">'+A.ago(c.at||c.createdAt)+'</small></a>';
+      }).join("")+'</div>'
+    : A.UI.empty("💬","گفتگویی نداری.");
+  
+
+})();
+</script>
+</body>
+</html>

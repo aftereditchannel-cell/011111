@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- استوری‌ها — آرتیست‌های واقعی از ساندکلود -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | استوری</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view">
+  <h1 style="font-size:1.2rem;margin:0 0 4px">استوری رپی 🔥</h1>
+  <p class="muted xs" style="margin:0 0 14px" id="sub">در حال بارگذاری…</p>
+  <div id="box"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("");
+
+  var box = document.getElementById("box");
+  var sub = document.getElementById("sub");
+  box.innerHTML = '<div class="hscroll">' + "123".split("").map(function(){
+    return '<div class="skel" style="width:66px;height:66px;border-radius:50%"></div>';
+  }).join("") + '</div>';
+
+  A.SC.load(function (tracks, artists) {
+    artists = artists || [];
+    if (!artists.length || !A.SC.online) {
+      sub.textContent = "ارتباط با سرور ساندکلود برقرار نشد.";
+      box.innerHTML = A.netError("استوری‌ها");
+      return;
+    }
+    sub.textContent = A.fa(artists.length) + " آرتیست — بزن ببین";
+
+    var seen = A.store.get("seenStories", []);
+
+    box.innerHTML =
+      '<div class="hscroll" style="margin-bottom:18px">' +
+        artists.map(function (a, i) {
+          return '<a class="story" href="story-view.html?i=' + i + '">' +
+            '<div class="story__ring' + (seen.indexOf(a.id) >= 0 ? " story__ring--seen" : "") + '">' +
+            '<img src="' + a.photo + '" alt="" loading="lazy"/></div>' +
+            '<small>' + A.esc(a.name) + '</small></a>';
+        }).join("") +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+        artists.map(function (a, i) {
+          var t = A.SC.byArtist(a.id)[0];
+          return '<a href="story-view.html?i=' + i + '"' +
+            ' style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:9/14;' +
+            'border:1px solid var(--stroke);display:block">' +
+            '<img src="' + ((t && t.cover) || a.photo) + '" alt=""' +
+              ' style="width:100%;height:100%;object-fit:cover;filter:brightness(.68)"/>' +
+            '<div style="position:absolute;inset-inline:10px;bottom:10px;text-align:start">' +
+              '<strong style="display:block;font-size:.78rem;color:#fff">' + A.esc(a.name) + '</strong>' +
+              '<small style="font-size:.64rem;color:#ddd">' + A.fa(a.trackCount) + ' ترک</small></div>' +
+            '<img src="' + a.photo + '" alt=""' +
+              ' style="position:absolute;top:8px;inset-inline-start:8px;width:30px;height:30px;' +
+              'border-radius:50%;border:2px solid #ffd166"/></a>';
+        }).join("") +
+      '</div>';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | گفتگو</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("");
+
+  var id=A.param("id");
+  var chat=A.DB.get("chats",id);
+  var box=document.getElementById("box");
+
+  if(!chat){ box.innerHTML=A.UI.empty("🕵️","این گفتگو پیدا نشد.","بازگشت","chat.html"); return; }
+  document.title="۰۱۱ رپ | "+chat.name;
+
+  box.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+      '<a href="chat.html" class="topbar__icon"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>' +
+      '<div class="gcard__logo" style="width:40px;height:40px;font-size:1rem">'+(chat.emoji||"💬")+'</div>' +
+      '<div><strong style="display:block;font-size:.9rem">'+A.esc(chat.name)+'</strong>' +
+      '<small class="muted xs">آنلاین</small></div></div>' +
+    '<div class="msgs" id="msgs"></div>' +
+    '<div class="cmt-form"><input class="input" id="mi" placeholder="پیامت رو بنویس…"/>' +
+    '<button class="btn btn--gold btn--sm" id="ms">ارسال</button></div>';
+
+  function render(){
+    var rows=A.DB.all("messages").filter(function(m){return m.chatId===id;})
+      .sort(function(a,b){return new Date(a.at||a.createdAt)-new Date(b.at||b.createdAt);});
+    var el=document.getElementById("msgs");
+    el.innerHTML = rows.length ? rows.map(function(m){
+      return '<div class="msg'+(m.me?" msg--me":"")+'">' +
+        (!m.me?'<strong style="display:block;font-size:.68rem;opacity:.75">'+A.esc(m.from)+'</strong>':'') +
+        '<span>'+A.esc(m.text)+'</span>' +
+        '<time>'+A.ago(m.at||m.createdAt)+'</time></div>';
+    }).join("") : A.UI.empty("👋","اولین پیام رو تو بفرست.");
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  }
+
+  function post(){
+    var i=document.getElementById("mi");
+    var t=i.value.trim(); if(!t) return;
+    if(!A.Auth.isIn) return A.needAuth("برای ارسال پیام باید وارد شوی.");
+    i.value="";
+    A.DB.add("messages",{ chatId:id, from:A.Auth.user.name, me:true, text:t, at:new Date().toISOString() });
+    A.DB.update("chats",id,{ last:t, at:new Date().toISOString() });
+    render();
+  }
+
+  document.getElementById("ms").addEventListener("click",post);
+  document.getElementById("mi").addEventListener("keydown",function(e){ if(e.key==="Enter") post(); });
+  render();
+  
+
+  /* ── این بخش هنوز فعال نشده ── */
+  A.lockPage({
+    icon: "💬",
+    title: "بخش چت هنوز فعال نشده",
+    text: "گفتگوی بین کاربران به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+})();
+</script>
+</body>
+</html>

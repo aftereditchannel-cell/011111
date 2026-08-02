@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- اعلان‌ها — از فعالیت واقعی ساخته می‌شود (ترک جدید، ویدیو، میتینگ) -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | اعلان‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <h1 style="font-size:1.2rem;margin:0">اعلان‌ها 🔔</h1>
+    <button class="btn btn--sm btn--ghost" id="readAll">خوانده شد ✓</button>
+  </div>
+  <p class="muted xs" style="margin:0 0 14px" id="sub">در حال بررسی…</p>
+  <div id="box"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("");
+
+  var box = document.getElementById("box");
+  var sub = document.getElementById("sub");
+  box.innerHTML = '<div class="card">' + "12".split("").map(function () {
+    return '<div class="noti"><div class="skel" style="width:38px;height:38px;border-radius:50%"></div>' +
+      '<div style="flex:1"><div class="skel" style="height:12px;width:70%"></div>' +
+      '<div class="skel" style="height:9px;width:30%;margin-top:6px"></div></div></div>';
+  }).join("") + '</div>';
+
+  var seen = A.store.get("notifSeen", []) || [];
+
+  A.SC.load(function (tracks, artists) {
+    tracks = tracks || []; artists = artists || [];
+    var items = [];
+
+    /* ۱) میتینگ پیش‌رو */
+    A.DB.all("meetings").forEach(function (m) {
+      var d = A.daysTo(m.date);
+      if (d >= 0) {
+        items.push({
+          id: "meet-" + m.id, icon: "📅", type: "meeting",
+          text: m.title + " — " + (m.soon ? "حدود " : "") + A.fa(d) + " روز مانده",
+          sub: m.venue + " · ظرفیت " + A.fa(m.cap || 0) + " نفر",
+          link: "meeting.html?id=" + m.id,
+          at: Date.now() - d * 1000
+        });
+      }
+    });
+
+    /* ۲) جدیدترین ترک‌ها */
+    tracks.slice(0, 8).forEach(function (t) {
+      items.push({
+        id: "trk-" + t.id, icon: "🎵", type: "track",
+        text: t.artist + " ترک «" + t.title + "» را منتشر کرد",
+        sub: A.nFmt(t.plays) + " پخش · ❤ " + A.nFmt(t.likes),
+        img: t.cover,
+        link: "music.html?artist=" + t.artistId,
+        at: new Date(t.createdAt).getTime()
+      });
+    });
+
+    /* ۳) آرتیست‌های تازه‌اضافه‌شده */
+    artists.slice(-2).forEach(function (a) {
+      items.push({
+        id: "art-" + a.id, icon: "🎤", type: "artist",
+        text: a.name + " به لیبل ۰۱۱ اضافه شد",
+        sub: a.trackCount ? A.fa(a.trackCount) + " ترک" : "به‌زودی آثارش می‌آید",
+        img: a.photo,
+        link: "music.html?artist=" + a.id,
+        at: Date.now() - 3 * 86400000
+      });
+    });
+
+    /* ۴) ویدیوهای یوتیوب */
+    ((window.CONFIG && CONFIG.videos) || []).slice(0, 2).forEach(function (v, i) {
+      var vid = A.YT.id(v.url);
+      if (!vid) return;
+      items.push({
+        id: "vid-" + vid, icon: "🎬", type: "video",
+        text: (v.artist || "یک آرتیست") + " ویدیوی جدید منتشر کرد",
+        sub: "یوتیوب — برای دیدن بزن",
+        img: A.YT.thumb(vid),
+        link: v.url, ext: true,
+        at: Date.now() - (i + 1) * 2 * 86400000
+      });
+    });
+
+    if (!items.length || !A.SC.online) {
+      sub.textContent = "";
+      box.innerHTML = A.netError("اعلان‌ها");
+      return;
+    }
+
+    items.sort(function (x, y) { return y.at - x.at; });
+
+    var unread = items.filter(function (it) { return seen.indexOf(it.id) < 0; }).length;
+    sub.textContent = unread
+      ? A.fa(unread) + " اعلان خوانده‌نشده"
+      : "همهٔ اعلان‌ها خوانده شده";
+
+    box.innerHTML = '<div class="card">' + items.map(function (it) {
+      var isNew = seen.indexOf(it.id) < 0;
+      return '<a class="noti' + (isNew ? " is-new" : "") + '" href="' + it.link + '"' +
+        (it.ext ? ' target="_blank" rel="noopener noreferrer"' : '') +
+        ' data-nid="' + it.id + '">' +
+        (it.img
+          ? '<img class="noti__ic" style="padding:0;object-fit:cover" src="' + it.img + '" alt="" loading="lazy"/>'
+          : '<div class="noti__ic">' + it.icon + '</div>') +
+        '<div class="noti__b"><p>' + A.esc(it.text) + '</p>' +
+        '<time>' + A.esc(it.sub) + '</time></div></a>';
+    }).join("") + '</div>';
+
+    /* علامت‌گذاری خوانده‌شده */
+    box.addEventListener("click", function (e) {
+      var n = e.target.closest("[data-nid]");
+      if (!n) return;
+      var id = n.getAttribute("data-nid");
+      if (seen.indexOf(id) < 0) { seen.push(id); A.store.set("notifSeen", seen); }
+    });
+
+    document.getElementById("readAll").addEventListener("click", function () {
+      seen = items.map(function (it) { return it.id; });
+      A.store.set("notifSeen", seen);
+      A.$$(".noti").forEach(function (n) { n.classList.remove("is-new"); });
+      sub.textContent = "همهٔ اعلان‌ها خوانده شده";
+      var bd = document.getElementById("bellBadge");
+      if (bd) bd.hidden = true;
+      A.toast("همه خوانده شد ✅", "ok");
+    });
+  });
+})();
+</script>
+</body>
+</html>

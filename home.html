@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!-- صفحهٔ خانه — پیج‌های رسمی، ویدیوها، آرتیست‌ها، ترک‌ها -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | خانه</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="preconnect" href="https://i.ytimg.com"/>
+<link rel="preconnect" href="https://w.soundcloud.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("home");
+  var v = document.getElementById("view");
+
+  /* ═══ ۱) هیرو ═══ */
+  var html =
+    '<section class="hero">' +
+      '<span class="hero__kicker">🎙️ میتینگ رپ طبرستان · کد ۰۱۱</span>' +
+      '<h1>صدای شمال،<br/><em>بی‌واسطه</em> پخش شو.</h1>' +
+      '<p>موزیک، آرتیست و میتینگ‌های رپ مازندران — همه یک‌جا.</p>' +
+      '<div class="hero__cta">' +
+        '<a class="btn btn--gold" href="music.html">🎧 شنیدن آهنگ‌ها</a>' +
+        '<a class="btn" href="index.html">📅 میتینگ‌ها</a>' +
+      '</div>' +
+    '</section>';
+
+  /* ═══ ۲) پیج‌های رسمی ═══ */
+  var pages = (window.CONFIG && CONFIG.pages) || [];
+  if (pages.length) {
+    html += A.UI.sectionHead("پیج‌های رسمی ما");
+    html += '<div class="pg-grid">' + pages.map(function (p) {
+      return '<a class="pgcard' + (p.main ? " pgcard--main" : "") + '"' +
+        ' href="' + p.url + '" target="_blank" rel="noopener noreferrer">' +
+        /* لوگوی رسمی اینستاگرام (SVG) — روی همهٔ سیستم‌ها رندر می‌شود */
+        /* آیکن بر اساس نوع پیج (اینستاگرام یا تلگرام) */
+        '<div class="pgcard__ic' + (p.kind === "telegram" ? " pgcard__ic--tg" : "") + '">' +
+          (p.kind === "telegram" ? A.TG_SVG : A.IG_SVG) + '</div>' +
+        '<div class="pgcard__b">' +
+          '<strong>' + A.esc(p.title) + '</strong>' +
+          '<span class="hnd">' + A.esc(p.handle) + '</span>' +
+          (p.desc ? '<small>' + A.esc(p.desc) + '</small>' : '') +
+        '</div>' +
+        '<div class="pgcard__go">↗</div></a>';
+    }).join("") + '</div>';
+
+    /* دکمهٔ ریز: همهٔ پلتفرم‌ها یک‌جا */
+    html += '<div style="text-align:center;margin:2px 0 4px">' +
+      '<button class="btn btn--sm btn--ghost" id="allPlat"' +
+      ' style="font-size:.74rem;padding:7px 16px">🔗 دیگر پلتفرم‌های ما</button></div>';
+  }
+
+  /* ═══ ۳) آمار ═══ */
+  html += '<div class="stats" id="stats">' +
+    '<div class="stat"><b>—</b><small>پخش</small></div>' +
+    '<div class="stat"><b>—</b><small>آرتیست</small></div>' +
+    '<div class="stat"><b>—</b><small>ترک</small></div></div>';
+
+  /* ═══ ۴) جدیدترین ویدیوها ═══ */
+  html += '<div id="vidSec"></div>';
+
+  /* ═══ ۵) استوری + آرتیست + ترک ═══ */
+  html += A.UI.sectionHead("استوری رپی 🔥", "stories.html") +
+    '<div class="hscroll" id="stories"></div>' +
+    A.UI.sectionHead("آرتیست‌ها 🎤", "artists.html") +
+    '<div class="hscroll" id="arts"></div>' +
+    A.UI.sectionHead("جدیدترین ترک‌ها", "music.html") +
+    '<div class="card" id="latest"></div>';
+
+  /* ═══ ۶) میتینگ بعدی ═══ */
+  var ms = A.DB.all("meetings")
+    .filter(function (m) { return new Date(m.date) >= Date.now(); })
+    .sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
+  if (ms.length) {
+    var m = ms[0], d = A.daysTo(m.date);
+    html += A.UI.sectionHead("میتینگ بعدی 🔥", "index.html") +
+      '<a class="card" href="meeting.html?id=' + m.id + '" style="display:block">' +
+        '<strong style="display:block;font-size:.95rem">' + A.esc(m.title) + '</strong>' +
+        '<p class="muted xs" style="margin:4px 0 8px">' + A.esc(m.venue) + ' · ' +
+          A.esc(m.soon ? (m.whenLabel || "به‌زودی") : A.jFull(m.date)) + '</p>' +
+        '<div style="display:flex;gap:8px">' +
+          '<span class="tag tag--soon">' + (m.soon ? "حدود " : "") + A.fa(d) + ' روز مانده</span>' +
+          '<span class="tag">ظرفیت ' + A.fa(m.cap || 0) + ' نفر</span></div></a>';
+  }
+
+  v.innerHTML = html;
+
+  /* اسکلتون ترک‌ها */
+  document.getElementById("latest").innerHTML = "123".split("").map(function () {
+    return '<div class="trow"><div class="skel" style="width:52px;height:52px;border-radius:14px"></div>' +
+      '<div style="flex:1"><div class="skel" style="height:12px;width:60%"></div>' +
+      '<div class="skel" style="height:10px;width:36%;margin-top:7px"></div></div></div>';
+  }).join("");
+
+  /* دکمهٔ «دیگر پلتفرم‌های ما» → نمایش همهٔ لینک‌ها */
+  var apBtn = document.getElementById("allPlat");
+  if (apBtn) apBtn.addEventListener("click", function () {
+    var box = document.getElementById("allPlatBox");
+    if (box) { box.remove(); return; }
+    box = document.createElement("div");
+    box.id = "allPlatBox";
+    box.className = "card";
+    box.style.marginBottom = "14px";
+    box.innerHTML = '<strong class="sm" style="display:block;margin-bottom:10px">' +
+        'همهٔ پلتفرم‌های ۰۱۱</strong>' +
+      '<div class="pbtn-row" style="justify-content:flex-start">' +
+        pages.map(function (p2) {
+          return A.platBtn(p2.kind === "telegram" ? "telegram" : "instagram",
+                           p2.url, p2.handle);
+        }).join("") +
+      '</div>';
+    apBtn.parentNode.insertAdjacentElement("afterend", box);
+  });
+
+  /* ═══ ویدیوهای یوتیوب ═══ */
+  /* از هر آرتیست فقط یک ویدیو (اولین ویدیوی همان آرتیست) */
+  var allVids = (window.CONFIG && CONFIG.videos) || [];
+  var seenArt = {};
+  var vids = allVids.filter(function (v) {
+    var k = (v.artist || "").trim() || Math.random();
+    if (seenArt[k]) return false;
+    seenArt[k] = 1;
+    return true;
+  });
+  if (vids.length) {
+    var vs = document.getElementById("vidSec");
+    vs.innerHTML = A.UI.sectionHead("جدیدترین ویدیوها 🎬") +
+      '<div class="hscroll" id="vidRow">' +
+      vids.map(function () {
+        return '<div class="vcard"><div class="skel" style="height:130px"></div></div>';
+      }).join("") + '</div>';
+
+    A.YT.load(vids, function (list) {
+      if (!list.length) {
+        vs.innerHTML = A.UI.sectionHead("جدیدترین ویدیوها 🎬") +
+                       A.netError("ویدیوها");
+        return;
+      }
+      document.getElementById("vidRow").innerHTML = list.map(function (v2) {
+        return '<a class="vcard" href="' + v2.url + '" target="_blank" rel="noopener noreferrer">' +
+          '<div class="vcard__thumb">' +
+            '<img src="' + v2.thumb + '" alt="" loading="lazy"/>' +
+            '<span class="vcard__play"><i></i></span>' +
+          '</div>' +
+          '<div class="vcard__b"><strong>' + A.esc(v2.title || "ویدیو") + '</strong>' +
+          '<small>' + A.esc(v2.artist || v2.author || "یوتیوب") + '</small></div></a>';
+      }).join("");
+    });
+  }
+
+  /* ═══ دادهٔ ساندکلود ═══ */
+  A.SC.load(function (tracks, artists) {
+    tracks = tracks || []; artists = artists || [];
+
+    /* اگر هیچ داده‌ای نیامد → پیام خطا با دکمهٔ تلاش مجدد */
+    if (!artists.length || !A.SC.online) {
+      document.getElementById("stats").style.display = "none";
+      document.getElementById("stories").innerHTML = "";
+      document.getElementById("arts").innerHTML = "";
+      document.getElementById("latest").outerHTML =
+        '<div id="latest">' + A.netError("آهنگ‌ها و آرتیست‌ها") + '</div>';
+      return;
+    }
+
+    var plays = 0;
+    tracks.forEach(function (t) { plays += t.plays || 0; });
+    document.getElementById("stats").innerHTML =
+      '<div class="stat"><b>' + A.nFmt(plays) + '</b><small>پخش</small></div>' +
+      '<div class="stat"><b>' + A.fa(artists.length) + '</b><small>آرتیست</small></div>' +
+      '<div class="stat"><b>' + A.fa(tracks.length) + '</b><small>ترک</small></div>';
+
+    document.getElementById("stories").innerHTML = artists.map(function (a, i) {
+      return '<a class="story" href="story-view.html?i=' + i + '">' +
+        '<div class="story__ring"><img src="' + a.photo + '" alt="" loading="lazy"/></div>' +
+        '<small>' + A.esc(a.name) + '</small></a>';
+    }).join("") || '<p class="muted xs">استوری‌ای نیست.</p>';
+
+    document.getElementById("arts").innerHTML = artists.map(function (a) {
+      return '<a class="acard" href="music.html?artist=' + a.id + '">' +
+        '<img class="acard__img" src="' + a.photo + '" alt="" loading="lazy"/>' +
+        '<h4>' + A.esc(a.name) + '</h4>' +
+        '<small>' + A.fa(a.trackCount) + ' ترک</small></a>';
+    }).join("");
+
+    var latest = tracks.slice(0, 5);
+    var box = document.getElementById("latest");
+    if (!latest.length) { box.innerHTML = A.UI.empty("🎧", "ترکی موجود نیست."); return; }
+    box.innerHTML = latest.map(function (t) {
+      return '<div class="trow" data-id="' + t.id + '">' +
+        '<img class="trow__art" src="' + t.cover + '" alt="" loading="lazy"/>' +
+        '<div class="trow__meta"><strong>' + A.esc(t.title) + '</strong>' +
+        '<small>' + A.esc(t.artist) + ' · ' + A.nFmt(t.plays) + ' پخش</small></div>' +
+        '<div class="trow__side">▶</div></div>';
+    }).join("");
+
+    box.addEventListener("click", function (e) {
+      var row = e.target.closest(".trow");
+      if (!row) return;
+      var id = row.getAttribute("data-id");
+      for (var i = 0; i < latest.length; i++)
+        if (latest[i].id === id) { A.SC.play(latest[i]); return; }
+    });
+  });
+})();
+</script>
+</body>
+</html>

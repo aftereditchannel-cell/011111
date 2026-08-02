@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- لیست آرتیست‌ها — همه خودکار از ساندکلود -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | آرتیست‌ها</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="preconnect" href="https://w.soundcloud.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view">
+  <h1 style="font-size:1.2rem;margin:0 0 4px">آرتیست‌ها 🎤</h1>
+  <p class="muted xs" style="margin:0 0 14px" id="sub">در حال گرفتن از ساندکلود…</p>
+  <div id="box"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  A.buildShell("");
+
+  var box = document.getElementById("box");
+  var sub = document.getElementById("sub");
+  box.innerHTML = '<div class="card"><div class="skel" style="height:160px"></div></div>';
+
+  A.SC.load(function (tracks, artists) {
+    if (!artists || !artists.length || !A.SC.online) {
+      sub.textContent = "ارتباط با سرور ساندکلود برقرار نشد.";
+      box.innerHTML = A.netError("آرتیست‌ها");
+      return;
+    }
+
+    sub.textContent = A.fa(artists.length) + " آرتیست · " +
+                      A.fa((tracks || []).length) + " ترک";
+
+    box.innerHTML = artists.map(function (a) {
+      return '<section class="phead" style="margin-bottom:14px;padding:20px 16px">' +
+        '<img class="avatar avatar--xl" style="margin-inline:auto" src="' + a.photo +
+          '" alt="' + A.esc(a.name) + '" loading="lazy"/>' +
+        '<h2>' + A.esc(a.name) + '</h2>' +
+        '<div class="handle">' +
+          A.esc(a.url.replace("https://soundcloud.com/", "@")) +
+          (a.city ? ' · ' + A.esc(a.city) : '') + '</div>' +
+        (a.bio ? '<p class="bio">' + A.esc(a.bio) + '</p>' : '') +
+        '<div class="pstats">' +
+          '<div><b>' + A.nFmt(a.followers) + '</b><small>دنبال‌کننده</small></div>' +
+          '<div><b>' + A.fa(a.trackCount) + '</b><small>ترک</small></div>' +
+          '<div><b>' + A.nFmt(a.plays) + '</b><small>پخش</small></div>' +
+        '</div>' +
+        '<p class="scnote">این آمار از اکانت ساندکلود آرتیست گرفته شده</p>' +
+        (a.trackCount
+          ? '<a class="btn btn--sm btn--gold" href="music.html?artist=' + a.id +
+            '" style="margin-bottom:10px">🎧 شنیدن ترک‌ها</a>' : '') +
+        '<div class="pbtn-grid">' +
+          A.platBtn("soundcloud", a.url, "ساندکلود") +
+          A.platBtn("instagram", a.instagram, "اینستاگرام") +
+          A.platBtn("telegram", a.telegram, "تلگرام") +
+          '<div class="pbtn-grid__last">' +
+            A.platBtn("youtube", a.youtube, "یوتیوب") + '</div>' +
+        '</div>' +
+      '</section>';
+    }).join("");
+  });
+})();
+</script>
+</body>
+</html>

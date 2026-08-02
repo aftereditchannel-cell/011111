@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!-- نمایشگر استوری — آرتیست‌های واقعی از ساندکلود -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#000000"/>
+<title>۰۱۱ رپ | استوری</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="preconnect" href="https://i1.sndcdn.com"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+<style>
+  body{padding:0;background:#000;overflow:hidden}
+  .sv{position:fixed;inset:0;max-width:var(--maxw);margin-inline:auto;overflow:hidden}
+  .sv__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .sv__shade{position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.6),transparent 30%,transparent 55%,rgba(0,0,0,.85))}
+  .sv__top{position:relative;z-index:2}
+  .sv__bars{display:flex;gap:4px;padding:10px 12px 0}
+  .sv__bar{flex:1;height:2.5px;border-radius:2px;background:rgba(255,255,255,.28);overflow:hidden}
+  .sv__bar i{display:block;height:100%;background:#fff;width:0}
+  .sv__who{display:flex;align-items:center;gap:9px;padding:10px 14px}
+  .sv__body{position:absolute;inset-inline:20px;bottom:96px;z-index:2;text-align:start}
+  .sv__foot{position:absolute;inset-inline:14px;bottom:20px;display:flex;gap:8px;z-index:3}
+  .sv__close{position:absolute;top:8px;inset-inline-end:8px;z-index:5;color:#fff}
+</style>
+</head>
+<body class="bare">
+
+<div class="sv" id="sv">
+  <img class="sv__img" id="img" src="" alt=""/>
+  <div class="sv__shade"></div>
+  <div class="sv__top">
+    <div class="sv__bars" id="bars"></div>
+    <div class="sv__who" id="who"></div>
+  </div>
+  <div class="sv__body" id="body"></div>
+  <div class="sv__foot">
+    <a class="btn btn--gold" id="scBtn" href="#" target="_blank" rel="noopener noreferrer"
+       style="flex:1">☁️ ساندکلود ↗</a>
+    <div id="igBtn" hidden></div>
+    <a class="btn" id="trBtn" href="#">🎧</a>
+  </div>
+  <button class="topbar__icon sv__close" id="close" aria-label="بستن">
+    <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.APP;
+  var DUR = 6000;
+  var list = [], i = parseInt(A.param("i") || "0", 10) || 0;
+  var timer = null, paused = false, start = 0, elapsed = 0;
+  var $ = function (id) { return document.getElementById(id); };
+
+  A.SC.load(function (tracks, artists) {
+    list = artists || [];
+    if (!list.length) { location.replace("stories.html"); return; }
+    if (i < 0 || i >= list.length) i = 0;
+    show(i);
+  });
+
+  function seen(id) {
+    var s = A.store.get("seenStories", []);
+    if (s.indexOf(id) < 0) { s.push(id); A.store.set("seenStories", s); }
+  }
+
+  function show(k) {
+    if (k < 0) k = 0;
+    if (k >= list.length) { location.href = "stories.html"; return; }
+    i = k; elapsed = 0; start = Date.now();
+
+    var a = list[i];
+    var top = A.SC.byArtist(a.id)[0];
+
+    $("img").src = (top && top.cover) || a.photo;
+    $("who").innerHTML =
+      '<img src="' + a.photo + '" alt="" style="width:34px;height:34px;border-radius:50%;' +
+        'border:2px solid #ffd166"/>' +
+      '<div><strong style="display:block;font-size:.82rem;color:#fff">' + A.esc(a.name) + '</strong>' +
+      '<small style="font-size:.64rem;color:#ccc">' +
+        A.esc(a.city || "") + (a.city ? ' · ' : '') + A.fa(a.trackCount) + ' ترک</small></div>';
+
+    $("body").innerHTML =
+      (a.bio ? '<p style="margin:0 0 8px;font-size:1rem;font-weight:700;color:#fff;' +
+        'text-shadow:0 2px 14px rgba(0,0,0,.9)">' + A.esc(a.bio) + '</p>' : '') +
+      (top ? '<p style="margin:0;font-size:.82rem;color:#ddd;text-shadow:0 2px 10px rgba(0,0,0,.9)">' +
+        '🎧 آخرین ترک: ' + A.esc(top.title) + '</p>' : '') +
+      '<p style="margin:6px 0 0;font-size:.74rem;color:#bbb">' +
+        A.nFmt(a.followers) + ' دنبال‌کننده · ' + A.nFmt(a.plays) + ' پخش</p>';
+
+    $("scBtn").href = a.url;
+    var ig = $("igBtn");
+    ig.hidden = false;
+    ig.innerHTML = '<div class="pbtn-row" style="justify-content:flex-start">' +
+      A.platBtn("instagram", a.instagram, "") +
+      A.platBtn("telegram", a.telegram, "") +
+      A.platBtn("youtube", a.youtube, "") + '</div>';
+    $("trBtn").href = a.trackCount ? "music.html?artist=" + a.id : "music.html";
+
+    $("bars").innerHTML = list.map(function (_, n) {
+      return '<div class="sv__bar"><i style="width:' + (n < i ? 100 : 0) + '%"></i></div>';
+    }).join("");
+
+    seen(a.id);
+    clearInterval(timer);
+    timer = setInterval(tick, 40);
+  }
+
+  function tick() {
+    if (paused) { start = Date.now() - elapsed; return; }
+    elapsed = Date.now() - start;
+    var pct = Math.min(100, elapsed / DUR * 100);
+    var bar = $("bars").children[i];
+    if (bar) bar.firstChild.style.width = pct + "%";
+    if (pct >= 100) show(i + 1);
+  }
+
+  var sv = $("sv");
+  sv.addEventListener("pointerdown", function () { paused = true; });
+  sv.addEventListener("pointerup", function (e) {
+    paused = false;
+    if (e.target.closest("a,button")) return;
+    var x = e.clientX / sv.clientWidth;
+    if (x > 0.65) show(i - 1); else if (x < 0.35) show(i + 1);
+  });
+
+  A.onDoubleTap(sv, function (x, y) { A.heartBurst(x, y, true); A.toast("لایک شد ❤️", "ok"); });
+  $("close").addEventListener("click", function () { location.href = "stories.html"; });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") location.href = "stories.html";
+    if (e.key === "ArrowLeft") show(i + 1);
+    if (e.key === "ArrowRight") show(i - 1);
+  });
+})();
+</script>
+</body>
+</html>

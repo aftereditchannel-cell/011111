@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | رنکینگ</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><h1 style="font-size:1.2rem;margin:0 0 4px">جدول رنکینگ 🏆</h1><p class="muted xs" style="margin:0 0 16px">امتیاز از ترکیب پخش، لایک، دنبال‌کننده و نتیجهٔ بتل‌ها محاسبه می‌شود.</p><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("");
+
+  var r = A.rankArtists();
+  var max = 1;
+  r.forEach(function(x){ if (x.score>max) max=x.score; });
+  var h = "";
+
+  if (r.length>=3){
+    h += '<div class="card" style="display:grid;grid-template-columns:1fr 1.2fr 1fr;align-items:end;gap:10px;text-align:center">';
+    [r[1],r[0],r[2]].forEach(function(a,i){
+      var first = (i===1), sz = first?66:52;
+      h += '<a href="artist.html?id=' + a.id + '">' +
+        '<img src="' + (a.photo||A.avatarOf(a.name)) + '" alt="" style="width:' + sz + 'px;height:' + sz +
+          'px;border-radius:50%;object-fit:cover;margin-inline:auto;border:2px solid ' +
+          (first?'#ffd166':'var(--stroke-2)') + '"/>' +
+        '<div style="font-size:1.1rem;margin-top:4px">' + ["🥈","🥇","🥉"][i] + '</div>' +
+        '<strong style="display:block;font-size:.76rem">' + A.esc(a.name) + '</strong>' +
+        '<small class="muted xs">' + A.fa(a.score) + '</small></a>';
+    });
+    h += '</div>';
+  }
+
+  h += '<div class="card" style="margin-top:14px">';
+  r.forEach(function(a){
+    h += '<a class="rank" href="artist.html?id=' + a.id + '">' +
+      '<div class="rank__n">' + (a.rank<=3 ? ["🥇","🥈","🥉"][a.rank-1] : A.fa(a.rank)) + '</div>' +
+      '<img class="avatar" src="' + (a.photo||A.avatarOf(a.name)) + '" alt=""/>' +
+      '<div class="rank__b"><strong>' + A.esc(a.name) + ' ' + a.tier.emoji + '</strong>' +
+      '<small class="muted xs">' + A.nFmt(a.plays) + ' پخش · ' + A.fa(a.wins||0) + ' برد</small>' +
+      '<div class="rank__bar"><i style="width:' + (a.score/max*100).toFixed(1) + '%"></i></div></div>' +
+      '<div class="rank__score">' + A.fa(a.score) + '</div></a>';
+  });
+  h += '</div>';
+
+  h += '<div class="card" style="margin-top:14px">' +
+    '<strong style="display:block;margin-bottom:8px;font-size:.86rem">نشان‌ها</strong>' +
+    [["👑","لجند","۸۵۰+"],["💎","الیت","۶۵۰+"],["🔥","حرفه‌ای","۴۲۰+"],
+     ["⚡","در حال رشد","۲۰۰+"],["🌱","تازه‌کار","زیر ۲۰۰"]].map(function(x){
+      return '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:.8rem">' +
+        '<span>' + x[0] + ' ' + x[1] + '</span><span class="muted xs">' + x[2] + '</span></div>';
+    }).join("") + '</div>';
+
+  document.getElementById("box").innerHTML = h;
+  
+
+  /* ── این بخش هنوز فعال نشده ── */
+  A.lockPage({
+    icon: "🏆",
+    title: "جدول رنکینگ هنوز فعال نشده",
+    text: "سیستم امتیازدهی و رتبه‌بندی به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  });
+
+})();
+</script>
+</body>
+</html>

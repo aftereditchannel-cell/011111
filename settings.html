@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0c"/>
+<title>۰۱۱ رپ | تنظیمات</title>
+<link rel="icon" href="assets/img/logo.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<main class="view" id="view"><h1 style="font-size:1.2rem;margin:0 0 16px">تنظیمات ⚙️</h1><div id="box"></div></main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function(){
+"use strict";
+var A = window.APP;
+A.buildShell("");
+
+  var box=document.getElementById("box");
+
+  function sw(label,on,id){
+    return '<div class="switch" data-sw="'+id+'"><span class="sm">'+label+'</span>' +
+      '<span class="switch__box'+(on?" is-on":"")+'"></span></div>';
+  }
+
+  var light = A.store.get("theme","dark")==="light";
+  box.innerHTML=
+    '<div class="card"><strong class="sm" style="display:block;margin-bottom:6px">ظاهر</strong>' +
+      sw("حالت روشن ☀️", light, "theme") + '</div>' +
+    '<div class="card" style="margin-top:14px">' +
+      '<strong class="sm" style="display:block;margin-bottom:10px">داده</strong>' +
+      '<div class="demobar" style="margin-bottom:12px"><span>💾</span>' +
+        '<span>' + (A.hasStorage
+          ? "داده‌ها در همین مرورگر ذخیره می‌شوند (نسخهٔ لوکال، بدون سرور)."
+          : "حافظهٔ محلی بسته است؛ داده‌ها فقط تا بستن تب می‌مانند.") + '</span></div>' +
+      '<button class="btn btn--danger btn--block" id="reset">♻️ ریست کامل داده‌ها</button></div>' +
+    (A.Auth.isIn ? '<div class="card" style="margin-top:14px">' +
+      '<strong class="sm" style="display:block;margin-bottom:10px">حساب</strong>' +
+      '<button class="btn btn--danger btn--block" id="out">🚪 خروج از حساب</button></div>' : '') +
+    '<div class="card" style="margin-top:14px;text-align:center">' +
+      '<img src="assets/img/logo.png" alt="" style="width:52px;height:52px;border-radius:16px;margin-inline:auto"/>' +
+      '<p class="muted xs" style="margin:10px 0 0">۰۱۱ رپ — نسخهٔ لوکال ۱.۰</p>' +
+      '<p class="muted xs" style="margin:4px 0 0">HTML · CSS · JavaScript — بدون نیاز به سرور</p></div>';
+
+  box.addEventListener("click",function(e){
+    var s=e.target.closest("[data-sw]");
+    if(s){
+      var b=s.querySelector(".switch__box");
+      b.classList.toggle("is-on");
+      var on=b.classList.contains("is-on");
+      if(s.getAttribute("data-sw")==="theme"){
+        document.documentElement.setAttribute("data-theme", on?"light":"dark");
+        A.store.set("theme", on?"light":"dark");
+      }
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click",function(){
+    if(!confirm("همهٔ داده‌های ذخیره‌شده پاک می‌شود. مطمئنی؟")) return;
+    A.DB.reset();
+    A.toast("داده پاک شد. در حال بارگذاری مجدد…","ok");
+    setTimeout(function(){ location.href="index.html"; },700);
+  });
+
+  var o=document.getElementById("out");
+  if(o) o.addEventListener("click",function(){
+    A.Auth.signOut();
+    A.toast("خارج شدی.","ok");
+    setTimeout(function(){ location.href="index.html"; },600);
+  });
+  
+})();
+</script>
+</body>
+</html>
