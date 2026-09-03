@@ -3,9 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="description" content="جزئیات میتینگ، لاین‌آپ و ثبت حضور."/>
+<meta property="og:title" content="۰۱۱ رپ | جزئیات میتینگ"/>
+<meta property="og:description" content="جزئیات میتینگ، لاین‌آپ و ثبت حضور."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://aftereditchannel-cell.github.io/011111/assets/img/og-cover.jpg"/>
+<meta property="og:url" content="https://aftereditchannel-cell.github.io/011111/meeting.html"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="۰۱۱ رپ | جزئیات میتینگ"/>
+<meta name="twitter:description" content="جزئیات میتینگ، لاین‌آپ و ثبت حضور."/>
 <meta name="theme-color" content="#0a0a0c"/>
 <title>۰۱۱ رپ | میتینگ</title>
+<link rel="canonical" href="https://aftereditchannel-cell.github.io/011111/meeting.html"/>
 <link rel="icon" href="assets/img/logo.png"/>
+<link rel="manifest" href="site.webmanifest"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
 <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
@@ -48,16 +59,25 @@ A.buildShell("meetings");
         '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">' +
         (m.lineup||[]).map(function(n){return '<span class="tag">🎤 '+A.esc(n)+'</span>';}).join("") +
         '</div></div>' +
-        (past?"": A.meetingLinks(true) +
+        (past?"": '<button class="btn btn--gold btn--block" id="rsvpBtn" data-id="'+m.id+'" style="margin-top:12px">' +
+          (going?"✓ حضور ثبت شد — لغو ثبت‌نام":"ثبت حضور در میتینگ") + '</button>' +
           '<p class="muted xs" style="margin:10px 0 0;text-align:center">' +
-          A.esc(A.LINKS.rsvp.hint) + '</p>') +
+          A.esc(A.LINKS.rsvp.hint) + '</p>' +
+          A.meetingLinks(true)) +
       '</div>' +
       '<h3 style="font-size:.95rem;margin:18px 0 8px">نظرها</h3>' +
       '<div class="card" id="cbox"></div>';
 
     A.mountComments(document.getElementById("cbox"), m.id);
 
-    /* ثبت‌نام داخل سایت موقتاً غیرفعال است؛ از دکمه‌های لینک‌دار بالا انجام می‌شود. */
+    var rb=document.getElementById("rsvpBtn");
+    if(rb) rb.addEventListener("click",function(){
+      try{
+        var on=A.Social.rsvp(rb.getAttribute("data-id"));
+        A.toast(on?"حضورت ثبت شد ✅":"حضورت لغو شد.","ok");
+        render();
+      }catch(ex){ A.needAuth(ex.message); }
+    });
   }
 
   function row(k,v){

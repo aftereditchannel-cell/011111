@@ -1,11 +1,20 @@
 <!DOCTYPE html>
+<!-- ورود / ثبت‌نام / بازیابی رمز — نسخهٔ کامل -->
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0a0a0c"/>
-<title>۰۱۱ رپ | ورود</title>
+<title>۰۱۱ رپ | ورود و ثبت‌نام</title>
+<meta name="description" content="ورود یا ساخت حساب در ۰۱۱ رپ — پلتفرم رپ مازندران. رأی بده، لایک کن، در میتینگ‌ها ثبت‌نام کن."/>
 <link rel="icon" href="assets/img/logo.png"/>
+<link rel="canonical" href="https://aftereditchannel-cell.github.io/011111/auth.html"/>
+<meta property="og:title" content="ورود و ثبت‌نام | ۰۱۱ رپ"/>
+<meta property="og:description" content="وارد شو تا رأی بدی، لایک کنی و توی میتینگ‌ها ثبت‌نام کنی."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://aftereditchannel-cell.github.io/011111/assets/img/og-cover.jpg"/>
+<meta property="og:url" content="https://aftereditchannel-cell.github.io/011111/auth.html"/>
+<meta name="twitter:card" content="summary_large_image"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
 <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
@@ -24,71 +33,263 @@ A.buildShell("profile");
   var box=document.getElementById("box");
   if (A.Auth.isIn){ location.replace("profile.html"); return; }
   var mode="in";
+  var busy=false;
+  var step="email";          // برای بازیابی: email → reset
+
+  var EYE =
+    '<svg viewBox="0 0 24 24" style="width:18px;height:18px">' +
+      '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/>' +
+      '<circle cx="12" cy="12" r="2.6"/></svg>';
+  var EYE_OFF =
+    '<svg viewBox="0 0 24 24" style="width:18px;height:18px">' +
+      '<path d="M3 3l18 18"/><path d="M9.9 5.1A10.8 10.8 0 0 1 12 4.5c6.5 0 10 7.5 10 7.5a18 18 0 0 1-2.2 2.9M6.6 6.6A16.5 16.5 0 0 0 2 12s3.5 6.5 10 6.5a10.6 10.6 0 0 0 4.6-1"/>' +
+      '<path d="M10.4 10.4a2.5 2.5 0 0 0 3.5 3.5"/></svg>';
+
+  function pwField(id, ph, toggleId){
+    return '<div class="field"><label>رمز عبور</label>' +
+      '<div class="input-wrap">' +
+        '<input class="input" type="password" id="'+id+'" dir="ltr" placeholder="'+ph+'"/>' +
+        '<button class="input-eye" type="button" id="'+toggleId+'" aria-label="نمایش رمز عبور">'+EYE+'</button>' +
+      '</div></div>';
+  }
+
+  function field(label, id, type, ph, opts){
+    opts=opts||{};
+    return '<div class="field"><label for="'+id+'">'+label+'</label>' +
+      '<input class="input'+(opts.err?' input--err':'')+'" id="'+id+'" type="'+(type||"text")+'"' +
+      (opts.dir?' dir="'+opts.dir+'"':'') + ' placeholder="'+(ph||"")+'"' +
+      (opts.autocomplete?' autocomplete="'+opts.autocomplete+'"':'') + '/>' +
+      (opts.hint?'<small class="field-hint">'+opts.hint+'</small>':'') + '</div>';
+  }
 
   function render(){
-    box.innerHTML=
-      '<div style="text-align:center;margin:10px 0 22px">' +
-        '<img src="assets/img/logo.png" alt="" style="width:74px;height:74px;border-radius:22px;margin-inline:auto;box-shadow:var(--sh-gold)"/>' +
-        '<h1 style="font-size:1.16rem;margin:14px 0 4px">به ۰۱۱ رپ خوش اومدی</h1>' +
-        '<p class="muted sm" style="margin:0">وارد شو تا لایک کنی، رأی بدی و توی میتینگ‌ها ثبت‌نام کنی.</p></div>' +
-      '<div class="segs"><button class="seg'+(mode==="in"?" is-on":"")+'" id="sIn">ورود</button>' +
-        '<button class="seg'+(mode==="up"?" is-on":"")+'" id="sUp">ثبت‌نام</button></div>' +
-      '<form class="card" id="f">' +
-        (mode==="up"?'<div class="field"><label>نام نمایشی</label><input class="input" id="nm" placeholder="اسم هنری‌ات"/></div>':'') +
-        (mode==="up"?'<div class="field"><label>یوزرنیم</label><input class="input" id="hd" dir="ltr" placeholder="@username"/></div>':'') +
-        '<div class="field"><label>ایمیل</label><input class="input" type="email" id="em" dir="ltr" placeholder="you@mail.com"/></div>' +
-        '<div class="field"><label>رمز عبور</label><input class="input" type="password" id="pw" dir="ltr" placeholder="حداقل ۶ کاراکتر"/></div>' +
-        '<button class="btn btn--gold btn--block" type="submit">'+(mode==="in"?"ورود":"ساخت حساب")+'</button>' +
-        '<div style="display:flex;align-items:center;gap:10px;margin:14px 0 8px">' +
-          '<hr style="flex:1;border:0;border-top:1px solid var(--stroke)"/>' +
-          '<small class="muted xs">یا</small>' +
-          '<hr style="flex:1;border:0;border-top:1px solid var(--stroke)"/></div>' +
-        '<button class="btn btn--ghost btn--block" type="button" id="anon">🕶️ ادامه به‌صورت ناشناس</button>' +
-      '</form>' +
-      '<div class="card" style="margin-top:14px">' +
-        '<strong class="sm">🕶️ حالت ناشناس چیست؟</strong>' +
-        '<p class="muted xs" style="margin:6px 0 0">بدون ایمیل و رمز وارد می‌شوی؛ می‌تونی رأی بدی، لایک کنی و کامنت بذاری، اما اسمت «ناشناس» نمایش داده می‌شه.</p></div>';
+    if (busy){ busy=false; }
 
-    document.getElementById("sIn").addEventListener("click",function(e){e.preventDefault();mode="in";render();});
-    document.getElementById("sUp").addEventListener("click",function(e){e.preventDefault();mode="up";render();});
+    var segs =
+      '<div class="segs">' +
+        '<button class="seg'+(mode==="in"?" is-on":"")+'" id="sIn">ورود</button>' +
+        '<button class="seg'+(mode==="up"?" is-on":"")+'" id="sUp">ثبت‌نام</button>' +
+        '<button class="seg'+(mode==="recover"?" is-on":"")+'" id="sRec">بازیابی</button>' +
+      '</div>';
+
+    var body="";
+    if (mode==="in") body = loginBody();
+    else if (mode==="up") body = registerBody();
+    else body = recoverBody();
+
+    box.innerHTML =
+      '<div style="text-align:center;margin:6px 0 20px">' +
+        '<img src="assets/img/logo.png" alt="لوگوی ۰۱۱ رپ" style="width:74px;height:74px;border-radius:22px;margin-inline:auto;box-shadow:var(--sh-gold)"/>' +
+        '<h1 style="font-size:1.16rem;margin:14px 0 4px">به ۰۱۱ رپ خوش اومدی</h1>' +
+        '<p class="muted sm" style="margin:0">پلتفرم رپ مازندران — موزیک، بتل، میتینگ و رنکینگ.</p></div>' +
+      segs + body;
+
+    document.getElementById("sIn").addEventListener("click",function(e){e.preventDefault();mode="in";step="email";render();});
+    document.getElementById("sUp").addEventListener("click",function(e){e.preventDefault();mode="up";step="email";render();});
+    document.getElementById("sRec").addEventListener("click",function(e){e.preventDefault();mode="recover";step="email";render();});
+
+    wirePasswordToggles();
+    if (mode==="in") wireLogin();
+    else if (mode==="up") wireRegister();
+    else wireRecover();
+  }
+
+  /* ── بدنهٔ ورود ── */
+  function loginBody(){
+    var rem = A.store.get("rememberEmail","");
+    return '<form class="card" id="f" novalidate>' +
+      field("ایمیل","em","email","you@mail.com",{dir:"ltr",autocomplete:"email"}) +
+      pwField("pw","حداقل ۶ کاراکتر","pwT") +
+      '<label class="checkline"><input type="checkbox" id="rem"'+(rem?" checked":"")+'/>' +
+        '<span>مرا به خاطر بسپار</span></label>' +
+      '<button class="btn btn--gold btn--block" type="submit" id="goBtn">ورود</button>' +
+      '<p class="field-err" id="err" hidden></p>' +
+      '<div class="divider"><hr/><small class="muted xs">یا</small><hr/></div>' +
+      '<button class="btn btn--ghost btn--block" type="button" id="anon">🕶️ ادامه به‌صورت ناشناس</button>' +
+    '</form>' +
+    '<p class="muted xs" style="margin:12px 0 0;text-align:center">حساب نداری؟ <button class="linklike" id="goUp">ساخت حساب جدید</button></p>';
+  }
+
+  function wireLogin(){
+    var em=document.getElementById("em");
+    if (A.store.get("rememberEmail","")) em.value = A.store.get("rememberEmail","");
 
     document.getElementById("f").addEventListener("submit",function(e){
       e.preventDefault();
-      var em=document.getElementById("em").value.trim();
-      var pw=document.getElementById("pw").value;
-      if(!em||em.indexOf("@")<0) return A.toast("ایمیل معتبر وارد کن.","err");
-      if(pw.length<6) return A.toast("رمز عبور حداقل ۶ کاراکتر باشد.","err");
-      try{
-        if(mode==="up"){
-          var nm=document.getElementById("nm").value.trim();
-          if(!nm) return A.toast("اسم هنری‌ات را وارد کن.","err");
-          A.Auth.signUp(em,pw,nm,document.getElementById("hd").value.trim());
-          A.toast("خوش اومدی! حسابت ساخته شد 🎉","ok");
-        } else {
-          A.Auth.signIn(em,pw);
+      var email=em.value.trim(), pw=document.getElementById("pw").value;
+      clearErr();
+      if(!validEmail(email)) return err("ایمیل معتبر وارد کن.");
+      if(pw.length<6) return err("رمز عبور حداقل ۶ کاراکتر است.");
+      setBusy("در حال ورود…");
+      setTimeout(function(){
+        try{
+          A.Auth.signIn(email,pw);
+          if (document.getElementById("rem").checked) A.store.set("rememberEmail",email);
+          else A.store.del("rememberEmail");
           A.toast("خوش برگشتی 👊","ok");
-        }
-        setTimeout(function(){ location.href="profile.html"; },600);
-      }catch(err){ A.toast(err.message,"err"); }
+          setTimeout(function(){ location.href="profile.html"; },500);
+        }catch(ex){ setBusy(false); err(ex.message); }
+      },450);
     });
 
     document.getElementById("anon").addEventListener("click",function(){
       A.Auth.signInAnon();
       A.toast("وارد حالت ناشناس شدی 🕶️","ok");
-      setTimeout(function(){ location.href="index.html"; },600);
+      setTimeout(function(){ location.href="index.html"; },500);
     });
+
+    document.getElementById("goUp").addEventListener("click",function(){mode="up";step="email";render();});
   }
+
+  /* ── بدنهٔ ثبت‌نام ── */
+  function registerBody(){
+    return '<form class="card" id="f" novalidate>' +
+      field("نام نمایشی","nm","text","اسم هنری‌ات",{autocomplete:"name"}) +
+      field("یوزرنیم","hd","text","@username",{dir:"ltr",autocomplete:"username"}) +
+      field("ایمیل","em","email","you@mail.com",{dir:"ltr",autocomplete:"email"}) +
+      pwField("pw","حداقل ۶ کاراکتر","pwT") +
+      '<label class="checkline"><input type="checkbox" id="agree"/><span>قوانین لیبل را خوانده‌ام و می‌پذیرم</span></label>' +
+      '<button class="btn btn--gold btn--block" type="submit" id="goBtn">ساخت حساب</button>' +
+      '<p class="field-err" id="err" hidden></p>' +
+    '</form>' +
+    '<p class="muted xs" style="margin:12px 0 0;text-align:center">قبلاً ثبت‌نام کردی؟ <button class="linklike" id="goIn">ورود به حساب</button></p>' +
+    '<div class="card" style="margin-top:14px">' +
+      '<strong class="sm">🕶️ حالت ناشناس چیست؟</strong>' +
+      '<p class="muted xs" style="margin:6px 0 0">بدون ایمیل و رمز وارد می‌شوی؛ می‌تونی رأی بدی، لایک کنی و کامنت بذاری، اما اسمت «ناشناس» نمایش داده می‌شه.</p></div>';
+  }
+
+  function wireRegister(){
+    document.getElementById("f").addEventListener("submit",function(e){
+      e.preventDefault();
+      var nm=document.getElementById("nm").value.trim();
+      var hd=document.getElementById("hd").value.trim();
+      var email=document.getElementById("em").value.trim();
+      var pw=document.getElementById("pw").value;
+      clearErr();
+      if(!nm) return err("اسم هنری‌ات را وارد کن.");
+      if(!validEmail(email)) return err("ایمیل معتبر وارد کن.");
+      if(pw.length<6) return err("رمز عبور حداقل ۶ کاراکتر است.");
+      if(!document.getElementById("agree").checked)
+        return err("برای ثبت‌نام باید قوانین لیبل را بپذیری.");
+      setBusy("در حال ساخت حساب…");
+      setTimeout(function(){
+        try{
+          var u=A.Auth.signUp(email,pw,nm,hd);
+          A.toast("خوش اومدی! حسابت ساخته شد 🎉","ok");
+          setTimeout(function(){ location.href="profile.html?welcome=1"; },600);
+        }catch(ex){ setBusy(false); err(ex.message); }
+      },450);
+    });
+
+    document.getElementById("goIn").addEventListener("click",function(){mode="in";step="email";render();});
+  }
+
+  /* ── بدنهٔ بازیابی ── */
+  function recoverBody(){
+    if (step==="email"){
+      return '<form class="card" id="f" novalidate>' +
+        '<p class="muted sm" style="margin:0 0 14px">ایمیلی که باهاش ثبت‌نام کردی را وارد کن تا رمز جدید بگیری.</p>' +
+        field("ایمیل","rem","email","you@mail.com",{dir:"ltr",autocomplete:"email"}) +
+        '<button class="btn btn--gold btn--block" type="submit" id="goBtn">ادامه</button>' +
+        '<p class="field-err" id="err" hidden></p>' +
+      '</form>';
+    }
+    /* مرحلهٔ دوم: رمز جدید */
+    return '<form class="card" id="f" novalidate>' +
+      '<div class="demobar" style="margin-bottom:12px"><span>🔐</span>' +
+        '<span>برای <b id="recEmail"></b> رمز جدید تعیین کن.</span></div>' +
+      pwField("npw","رمز جدید (حداقل ۶ کاراکتر)","npwT") +
+      pwField("cpw","تکرار رمز جدید","cpwT") +
+      '<button class="btn btn--gold btn--block" type="submit" id="goBtn">تغییر رمز</button>' +
+      '<p class="field-err" id="err" hidden></p>' +
+    '</form>' +
+    '<p class="muted xs" style="margin:12px 0 0;line-height:2">💡 در این نسخهٔ بدون سرور، بازیابی مستقیماً روی دستگاه انجام می‌شود. ' +
+      'در نسخهٔ ابری (Supabase) یک لینک بازیابی به ایمیلت ارسال خواهد شد.</p>';
+  }
+
+  function wireRecover(){
+    if (step==="email"){
+      document.getElementById("f").addEventListener("submit",function(e){
+        e.preventDefault();
+        var email=document.getElementById("rem").value.trim();
+        clearErr();
+        if(!validEmail(email)) return err("ایمیل معتبر وارد کن.");
+        var users=A.DB.all("users")||[];
+        var found=null;
+        for(var i=0;i<users.length;i++) if(users[i].email===email) found=users[i];
+        if(!found) return err("کاربری با این ایمیل پیدا نشد.");
+        A.store.set("recoverEmail", email);
+        step="reset";
+        render();
+      });
+    } else {
+      document.getElementById("recEmail").textContent = A.store.get("recoverEmail","");
+      document.getElementById("f").addEventListener("submit",function(e){
+        e.preventDefault();
+        var np=document.getElementById("npw").value, cp=document.getElementById("cpw").value;
+        clearErr();
+        if(np.length<6) return err("رمز جدید حداقل ۶ کاراکتر است.");
+        if(np!==cp) return err("تکرار رمز با رمز جدید یکسان نیست.");
+        var email=A.store.get("recoverEmail","");
+        var users=A.DB.all("users")||[];
+        var found=null;
+        for(var i=0;i<users.length;i++) if(users[i].email===email) found=users[i];
+        if(!found) return err("این درخواست منقضی شده؛ دوباره شروع کن.");
+        setBusy("در حال تغییر…");
+        setTimeout(function(){
+          found.pw=btoa(np);
+          A.DB.save("users",users);
+          A.store.del("recoverEmail");
+          A.toast("رمز عبور تغییر کرد ✅ حالا وارد شو.","ok");
+          step="email"; mode="in"; render();
+        },450);
+      });
+    }
+  }
+
+  /* ── ابزار فرم ── */
+  function validEmail(s){ return s.indexOf("@")>0 && s.lastIndexOf(".")>s.indexOf("@"); }
+  function clearErr(){ var e=document.getElementById("err"); if(e){e.hidden=true;e.textContent="";} }
+  function err(msg){
+    var e=document.getElementById("err");
+    if(e){ e.textContent=msg; e.hidden=false; }
+    A.toast(msg,"err");
+  }
+  function btnLabel(){
+    if (mode==="in") return "ورود";
+    if (mode==="up") return "ساخت حساب";
+    if (mode==="recover") return step==="email" ? "ادامه" : "تغییر رمز";
+    return "";
+  }
+  function setBusy(txt){
+    var b=document.getElementById("goBtn");
+    if(!b) return;
+    if(txt){
+      busy=true;
+      b.disabled=true;
+      b.textContent="⏳ "+txt;
+    } else {
+      busy=false;
+      b.disabled=false;
+      b.textContent=btnLabel();
+    }
+  }
+  function wirePasswordToggles(){
+    function hook(tid,pid){
+      var t=document.getElementById(tid);
+      if(!t) return;
+      t.addEventListener("click",function(){
+        var p=document.getElementById(pid);
+        var show = p.type==="password";
+        p.type = show ? "text" : "password";
+        t.innerHTML = show ? EYE_OFF : EYE;
+        t.setAttribute("aria-label", show?"پنهان کردن رمز":"نمایش رمز عبور");
+      });
+    }
+    hook("pwT","pw"); hook("npwT","npw"); hook("cpwT","cpw");
+  }
+
   render();
-  
-
-  /* ── ثبت‌نام داخل سایت هنوز فعال نشده ── */
-  A.lockPage({
-    icon: "\u{1F510}",
-    title: "ثبت‌نام هنوز فعال نشده",
-    text: "ساخت حساب کاربری به دلیل هزینهٔ سرورها هنوز فعال نشده است. فعلاً ثبت‌نام میتینگ از طریق لینک زیر انجام می‌شود.",
-    links: true
-  });
-
 })();
 </script>
 </body>

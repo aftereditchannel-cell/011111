@@ -3,9 +3,32 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="description" content="میتینگ‌های رپ طبرستان و لیبل ۰۱۱ — ثبت‌نام، لاین‌آپ و جزئیات. ساخته‌شده توسط AFTER EDIT."/>
+<meta property="og:title" content="۰۱۱ رپ | میتینگ‌های رپ مازندران"/>
+<meta property="og:description" content="میتینگ‌های رپ طبرستان و لیبل ۰۱۱ — ثبت‌نام، لاین‌آپ و جزئیات. ساخته‌شده توسط AFTER EDIT."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://aftereditchannel-cell.github.io/011111/assets/img/og-cover.jpg"/>
+<meta property="og:url" content="https://aftereditchannel-cell.github.io/011111/index.html"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="۰۱۱ رپ | میتینگ‌های رپ مازندران"/>
+<meta name="twitter:description" content="میتینگ‌های رپ طبرستان و لیبل ۰۱۱ — ثبت‌نام، لاین‌آپ و جزئیات. ساخته‌شده توسط AFTER EDIT."/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "۰۱۱ رپ",
+  "alternateName": "011 RAP",
+  "url": "https://aftereditchannel-cell.github.io/011111/",
+  "inLanguage": "fa",
+  "description": "پلتفرم رپ مازندران — موزیک، آرتیست، بتل و میتینگ‌های لیبل ۰۱۱",
+  "publisher": { "@type": "Organization", "name": "AFTER EDIT" }
+}
+</script>
 <meta name="theme-color" content="#0a0a0c"/>
 <title>۰۱۱ رپ | میتینگ‌ها</title>
+<link rel="canonical" href="https://aftereditchannel-cell.github.io/011111/index.html"/>
 <link rel="icon" href="assets/img/logo.png"/>
+<link rel="manifest" href="site.webmanifest"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
 <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
@@ -61,6 +84,7 @@ A.buildShell("meetings");
       /* اگر تاریخ هنوز قطعی نشده (soon)، به‌جای تاریخ و ساعت دقیق
          بازهٔ اعلام‌شده نمایش داده می‌شود */
       var whenTxt = m.soon ? (m.whenLabel || "به‌زودی") : A.jFull(m.date);
+      var rsvped = A.Social.hasRsvp(m.id);
       h += '<section class="hero" style="margin-bottom:16px;padding:22px 20px">' +
         '<span class="hero__kicker">🔥 میتینگ بعدی</span>' +
         '<h1 style="font-size:1.22rem;margin:10px 0 6px">'+A.esc(m.title)+'</h1>' +
@@ -69,18 +93,30 @@ A.buildShell("meetings");
           '<div class="stat"><b>'+(m.soon?"~"+A.fa(d):(d>=0?A.fa(d):"—"))+'</b><small>روز مانده</small></div>' +
           '<div class="stat"><b>'+A.fa(m.cap||0)+'</b><small>ظرفیت</small></div>' +
           '<div class="stat"><b>'+A.nFmt(m.going||0)+'</b><small>ثبت‌نام</small></div></div>' +
-        A.meetingLinks(false) +
+        '<div class="hero__cta" style="margin-top:6px">' +
+          '<button class="btn btn--gold" id="rsvpBtn" data-id="'+m.id+'">' +
+            (rsvped ? '✓ حضور ثبت شد' : 'ثبت حضور در میتینگ') + '</button>' +
+          '<a class="btn btn--ghost" href="meeting.html?id='+m.id+'">جزئیات</a></div>' +
         '<p class="muted xs" style="margin:10px 0 0">' + A.esc(A.LINKS.rsvp.hint) + '</p>' +
-        '<div class="hero__cta" style="margin-top:10px">' +
-          '<a class="btn btn--ghost" href="meeting.html?id='+m.id+'">جزئیات میتینگ</a></div></section>';
+        A.meetingLinks(false) +
+        '</section>';
       rows=rows.slice(1);
     }
     h += rows.map(A.UI.meetingCard).join("");
     list.innerHTML=h;
   }
 
-  /* ثبت‌نام داخل سایت موقتاً غیرفعال است؛
-     کاربر از طریق دکمه‌های لینک‌دار بالا ثبت‌نام می‌کند. */
+  /* ثبت حضور در میتینگ — نیازمند ورود */
+  document.getElementById("list").addEventListener("click",function(e){
+    var b=e.target.closest("#rsvpBtn");
+    if(!b) return;
+    var id=b.getAttribute("data-id");
+    try{
+      var on=A.Social.rsvp(id);
+      A.toast(on?"حضورت ثبت شد ✅":"حضورت لغو شد.","ok");
+      render();
+    }catch(ex){ A.needAuth(ex.message); }
+  });
 
   document.getElementById("newM").addEventListener("click",function(){
     if(!A.Auth.isIn) return A.needAuth("برای ساخت میتینگ باید وارد شوی.");

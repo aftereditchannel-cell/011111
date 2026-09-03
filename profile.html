@@ -3,9 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="description" content="پروفایل کاربری، ترک‌های من، لایک‌شده‌ها و میتینگ‌های ثبت‌نام‌شده."/>
+<meta property="og:title" content="۰۱۱ رپ | پروفایل"/>
+<meta property="og:description" content="پروفایل کاربری، ترک‌های من، لایک‌شده‌ها و میتینگ‌های ثبت‌نام‌شده."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://aftereditchannel-cell.github.io/011111/assets/img/og-cover.jpg"/>
+<meta property="og:url" content="https://aftereditchannel-cell.github.io/011111/profile.html"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="۰۱۱ رپ | پروفایل"/>
+<meta name="twitter:description" content="پروفایل کاربری، ترک‌های من، لایک‌شده‌ها و میتینگ‌های ثبت‌نام‌شده."/>
 <meta name="theme-color" content="#0a0a0c"/>
 <title>۰۱۱ رپ | پروفایل</title>
+<link rel="canonical" href="https://aftereditchannel-cell.github.io/011111/profile.html"/>
 <link rel="icon" href="assets/img/logo.png"/>
+<link rel="manifest" href="site.webmanifest"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"/>
 <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
@@ -52,14 +63,15 @@ A.buildShell("profile");
         '<div class="pactions">' +
           '<button class="btn btn--gold" id="edit">✏️ ویرایش</button>' +
           '<a class="btn" href="upload.html">⬆️ آپلود</a>' +
-          '<a class="btn" href="settings.html">⚙️</a></div></section>' +
+          '<button class="btn" id="out">🚪 خروج</button></div></section>' +
       (u.anonymous?'<div class="demobar" style="margin-top:14px"><span>🕶️</span>' +
         '<span>در حالت ناشناس هستی. برای حفظ دائمی داده‌هایت حساب کامل بساز.</span></div>':'') +
       '<div id="editBox"></div>' +
       '<div class="segs" style="margin-top:16px" id="segs">' +
         '<button class="seg is-on" data-k="tracks">ترک‌های من</button>' +
         '<button class="seg" data-k="liked">لایک‌شده</button>' +
-        '<button class="seg" data-k="follow">دنبال‌شده</button></div>' +
+        '<button class="seg" data-k="follow">دنبال‌شده</button>' +
+        '<button class="seg" data-k="meetings">میتینگ‌های من</button></div>' +
       '<div class="card" id="tabBox"></div>';
 
     var tab="tracks";
@@ -80,6 +92,19 @@ A.buildShell("profile");
               '<div class="trow__side">›</div></a>';
           }).join("")
         : A.UI.empty("👤","هنوز کسی را دنبال نمی‌کنی.");
+      if(tab==="meetings"){
+        var rsvpIds=A.DB.all("rsvps").filter(function(r){return r.userId===u.uid;})
+          .map(function(r){return r.meetingId;});
+        var mineM=A.DB.all("meetings").filter(function(m){return rsvpIds.indexOf(m.id)>=0;});
+        el.innerHTML = mineM.length
+          ? mineM.map(function(m){
+              return '<a class="trow" href="meeting.html?id='+m.id+'">' +
+                '<div class="trow__meta"><strong>'+A.esc(m.title)+'</strong>' +
+                '<small>'+A.esc(m.venue)+' · '+(m.soon?(m.whenLabel||"به‌زودی"):A.jFull(m.date))+'</small></div>' +
+                '<div class="trow__side">›</div></a>';
+            }).join("")
+          : A.UI.empty("📅","هنوز در میتینگی ثبت‌نام نکردی.","دیدن میتینگ‌ها","index.html");
+      }
     }
     paintTab();
 
@@ -119,16 +144,21 @@ A.buildShell("profile");
       });
     });
   }
-  render();
-  
-
-  /* ── این بخش هنوز فعال نشده: محتوا بلور می‌شود و دیالوگ نمایش داده می‌شود ── */
-  A.lockPage({
-    icon: "🙍",
-    title: "بخش پروفایل هنوز فعال نشده",
-    text: "حساب کاربری و پروفایل به دلیل هزینهٔ سرورها هنوز فعال نشده است."
+  /* خروج از حساب */
+  document.addEventListener("click", function(e){
+    var b=e.target.closest("#out");
+    if(!b) return;
+    A.Auth.signOut();
+    A.toast("از حساب خارج شدی.","ok");
+    setTimeout(function(){ location.href="index.html"; },600);
   });
 
+  /* خوش‌آمدگویی بعد از ثبت‌نام */
+  if (A.param("welcome")==="1" && A.Auth.isIn){
+    A.toast("خوش اومدی، "+A.Auth.user.name+"! پروفایلت ساخته شد 🎉","ok");
+  }
+
+  render();
 })();
 </script>
 </body>

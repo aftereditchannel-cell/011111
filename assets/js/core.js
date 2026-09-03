@@ -239,7 +239,26 @@
     artists: [],
     tracks: [],
 
-    battles: [],
+    battles: [
+      {
+        id: "b1", title: "سایه VS LEADER", round: "فینال میتینگ آمل",
+        aId: "sayeh",  aName: "سایه",  aVotes: 134,
+        bId: "leader", bName: "LEADER", bVotes: 121,
+        status: "live", endsAt: iso(6)
+      },
+      {
+        id: "b2", title: "Farhangangi VS LilRijo", round: "نیمه‌نهایی",
+        aId: "farhan",  aName: "Farhangangi", aVotes: 210,
+        bId: "lilrijo", bName: "LilRijo",      bVotes: 189,
+        status: "ended", endsAt: iso(-3)
+      },
+      {
+        id: "b3", title: "aedan VS shadii", round: "مرحلهٔ باز",
+        aId: "aedan",  aName: "aedan", aVotes: 54,
+        bId: "shadii", bName: "shadii", bVotes: 61,
+        status: "live", endsAt: iso(1)
+      }
+    ],
 
     /* میتینگ‌ها از فایل تنظیمات (assets/js/config.js) */
     meetings: (window.CONFIG && window.CONFIG.meetings) || [],
@@ -251,7 +270,9 @@
     ],
     gangs: [
       { id:"011family", name:"۰۱۱ فمیلی", emoji:"👑", members:1, city:"آمل",
-        desc:"لِیبل رپ مازندران — پایگاه: آمل." }
+        desc:"لِیبل رپ مازندران — پایگاه: آمل." },
+      { id:"northside", name:"نورث‌ساید", emoji:"🏔", members:3, city:"شمال",
+        desc:"کلکتیو زیرزمینی شمال — فلو، فری‌استایل و اجرای زنده." }
     ],
     chats: [
       { id:"c1", name:"گروه میتینگ آمل", emoji:"⚔️", last:"کی برای راند ۵ هست؟", at:iso(-0.05) },
@@ -868,6 +889,16 @@
   function buildShell(active) {
     var u = Auth.user;
 
+    /* ── لینک پرش به محتوا (دسترس‌پذیری) ── */
+    if (!document.getElementById("skipLink")) {
+      var skip = document.createElement("a");
+      skip.id = "skipLink";
+      skip.className = "skip-link";
+      skip.href = "#view";
+      skip.textContent = "پرش به محتوا";
+      document.body.insertBefore(skip, document.body.firstChild);
+    }
+
     /* ── هدر ── */
     var top = document.createElement("header");
     top.className = "topbar";
@@ -941,12 +972,19 @@
           }).join("") +
         '</nav>' +
         '<div class="drawer__foot">' +
-          /* ثبت‌نام داخلی غیرفعال است؛ دکمهٔ اصلی = ثبت‌نام میتینگ (لینک بیرونی) */
-          '<a class="btn btn--gold btn--block" href="' + LINKS.rsvp.url + '"' +
-            ' target="_blank" rel="noopener noreferrer">✅ ' + esc(LINKS.rsvp.label) + ' ↗</a>' +
-          '<a class="btn btn--ghost btn--block" href="upload.html"' +
-            ' style="margin-top:8px">👑 ' + esc(LINKS.label.label) + '</a>' +
-          '<p class="muted xs" style="margin-top:10px">ثبت‌نام داخل سایت به‌زودی فعال می‌شود</p>' +
+          (u
+            ? '<a class="btn btn--gold btn--block" href="profile.html">🙍 پروفایل ' + esc(u.name) + '</a>' +
+              '<a class="btn btn--ghost btn--block" href="index.html" data-out="1" style="margin-top:8px">🚪 خروج از حساب</a>'
+            : '<a class="btn btn--gold btn--block" href="auth.html">ورود / ثبت‌نام</a>' +
+              '<a class="btn btn--ghost btn--block" href="upload.html" style="margin-top:8px">👑 ' + esc(LINKS.label.label) + ' ↗</a>') +
+          '<a class="btn btn--ghost btn--block" href="' + LINKS.rsvp.url + '"' +
+            ' target="_blank" rel="noopener noreferrer" style="margin-top:8px">✅ ' + esc(LINKS.rsvp.label) + ' ↗</a>' +
+          '<nav class="drawer__links" aria-label="لینک‌های کمکی">' +
+            '<a href="rules.html">قوانین لیبل</a>' +
+            '<a href="search.html">جستجو</a>' +
+            '<a href="settings.html">تنظیمات</a>' +
+          '</nav>' +
+          '<p class="muted xs" style="margin-top:10px;line-height:2">۰۱۱ رپ — پلتفرم رپ مازندران<br/>طراحی و تولید: <b style="color:var(--gold-1)">AFTER EDIT</b></p>' +
         '</div>' +
       '</aside>';
     document.body.appendChild(dr);
@@ -980,11 +1018,17 @@
     };
     document.getElementById("btnMenu").addEventListener("click", open);
     $$("#drawer [data-close]").forEach(function (b) { b.addEventListener("click", close); });
+    $$("#drawer [data-out]").forEach(function (b) {
+      b.addEventListener("click", function (e) {
+        e.preventDefault();
+        Auth.signOut();
+        toast("از حساب خارج شدی.", "ok");
+        setTimeout(function () { location.href = "index.html"; }, 600);
+      });
+    });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !dr.hidden) close();
     });
-
-    /* دکمهٔ ورود/خروج حذف شد — ثبت‌نام داخلی فعلاً غیرفعال است */
 
     document.getElementById("mpToggle").addEventListener("click", function (e) {
       e.preventDefault(); Player.toggle();
@@ -1108,13 +1152,10 @@
     render();
   }
 
-  /** دکمهٔ نیازمند ورود */
-  /**
-   * قبلاً کاربر را به صفحهٔ ثبت‌نام می‌فرستاد؛ اما حالا حساب کاربری
-   * غیرفعال است. پس فقط پیام می‌دهد و به لینک بیرونی راهنمایی می‌کند.
-   */
+  /** دکمهٔ نیازمند ورود — کاربر را به صفحهٔ ورود/ثبت‌نام می‌فرستد */
   function needAuth(msg) {
-    toast("ثبت‌نام هنوز فعال نشده — از دکمهٔ ثبت‌نام میتینگ استفاده کن.", "err");
+    toast(msg || "برای این کار باید وارد شوی.", "err");
+    setTimeout(function () { location.href = "auth.html"; }, 900);
   }
 
   /* ══════════ ۱۰) بخش‌های قفل‌شده ══════════
@@ -1122,9 +1163,10 @@
      یک دیالوگ توضیح روی آن می‌نشیند. هدر و نویگیشن سالم
      می‌مانند تا کاربر بتواند به بخش‌های فعال برود. */
 
-  /** بخش‌های غیرفعال — باز: میتینگ، تنظیمات، آهنگ‌ها، آرتیست‌ها
-   *  برای فعال کردن یک بخش، کلیدش را از این آرایه حذف کن. */
-  var LOCKED = ["battles", "profile", "auth", "rank", "gangs", "chat"];
+  /** بخش‌های غیرفعال.
+   *  نسخهٔ کامل: همهٔ بخش‌ها فعال‌اند. برای غیرفعال کردن موقت یک بخش،
+   *  کلیدش را به این آرایه اضافه کن. */
+  var LOCKED = [];
 
   /* ═══════════════════════════════════════════════════════════
      🔗 لینک‌های بیرونی  ←←←  اینجا را با آدرس واقعی خودت عوض کن
@@ -1602,7 +1644,7 @@
           '<img id="scCover" class="scbar__cover" src="" alt=""/>' +
           '<div class="scbar__meta"><strong id="scTitle">—</strong>' +
             '<small id="scArtist">—</small></div>' +
-          '<a id="scOpen" class="scbar__btn" href="#" target="_blank"' +
+          '<a id="scOpen" class="scbar__btn" href="https://soundcloud.com" target="_blank"' +
             ' rel="noopener noreferrer" title="باز کردن در ساندکلود">↗</a>' +
           '<button id="scClose" class="scbar__btn" title="بستن">✕</button>' +
         '</div>' +
