@@ -1,0 +1,26 @@
+# ── وابستگی‌ها و بیلد ──
+node_modules/
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# ── سکرت‌ها ──
+.env
+.env.local
+.env.*.local
+*.pem
+serviceAccountKey.json
+
+# ── سیستم‌عامل / ادیتور ──
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# ── کش و موقت ──
+.cache/
+.tmp/
+*.tmp

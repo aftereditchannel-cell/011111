@@ -1,0 +1,21 @@
+{
+  "name": "۰۱۱ رپ — پلتفرم رپ مازندران",
+  "short_name": "۰۱۱ رپ",
+  "description": "موزیک، آرتیست، بتل و میتینگ‌های رپ مازندران — ساخته‌شده توسط AFTER EDIT",
+  "start_url": "/011111/index.html",
+  "scope": "/011111/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08080a",
+  "theme_color": "#0a0a0c",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "assets/img/logo.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

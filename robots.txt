@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aftereditchannel-cell.github.io/011111/sitemap.xml
