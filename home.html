@@ -5,8 +5,36 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0a0a0c"/>
-<title>۰۱۱ رپ | خانه</title>
+<title>۰۱۱ رپ | خانه — پلتفرم رپ مازندران</title>
+<meta name="description" content="۰۱۱ رپ؛ پلتفرم رسمی رپ مازندران — موزیک، آرتیست، بتل، رنکینگ و میتینگ‌های رپ طبرستان. ساخته‌شده توسط AFTER EDIT."/>
 <link rel="icon" href="assets/img/logo.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<link rel="canonical" href="https://aftereditchannel-cell.github.io/011111/home.html"/>
+<meta property="og:title" content="۰۱۱ رپ — صدای شمال"/>
+<meta property="og:description" content="موزیک، آرتیست و میتینگ‌های رپ مازندران — همه یک‌جا."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://aftereditchannel-cell.github.io/011111/assets/img/og-cover.jpg"/>
+<meta property="og:url" content="https://aftereditchannel-cell.github.io/011111/home.html"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="۰۱۱ رپ — صدای شمال"/>
+<meta name="twitter:description" content="موزیک، آرتیست و میتینگ‌های رپ مازندران — همه یک‌جا."/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "۰۱۱ رپ",
+  "alternateName": "011 RAP",
+  "description": "پلتفرم رپ مازندران — لیبل و میتینگ رپ طبرستان",
+  "url": "https://aftereditchannel-cell.github.io/011111/",
+  "logo": "https://aftereditchannel-cell.github.io/011111/assets/img/logo.png",
+  "genre": "Hip-Hop / Rap",
+  "sameAs": [
+    "https://www.instagram.com/011familyy/",
+    "https://t.me/ch_011family",
+    "https://www.instagram.com/afteredit.official/"
+  ]
+}
+</script>
 <link rel="preconnect" href="https://i1.sndcdn.com"/>
 <link rel="preconnect" href="https://i.ytimg.com"/>
 <link rel="preconnect" href="https://w.soundcloud.com"/>
@@ -28,13 +56,17 @@
 
   /* ═══ ۱) هیرو ═══ */
   var html =
-    '<section class="hero">' +
-      '<span class="hero__kicker">🎙️ میتینگ رپ طبرستان · کد ۰۱۱</span>' +
-      '<h1>صدای شمال،<br/><em>بی‌واسطه</em> پخش شو.</h1>' +
-      '<p>موزیک، آرتیست و میتینگ‌های رپ مازندران — همه یک‌جا.</p>' +
-      '<div class="hero__cta">' +
-        '<a class="btn btn--gold" href="music.html">🎧 شنیدن آهنگ‌ها</a>' +
-        '<a class="btn" href="index.html">📅 میتینگ‌ها</a>' +
+    '<section class="hero hero--art">' +
+      '<div class="hero--art__bg"></div>' +
+      '<div class="hero--art__veil"></div>' +
+      '<div class="hero--art__in">' +
+        '<span class="hero__kicker">🎙️ میتینگ رپ طبرستان · کد ۰۱۱</span>' +
+        '<h1>صدای شمال،<br/><em>بی‌واسطه</em> پخش شو.</h1>' +
+        '<p>موزیک، آرتیست و میتینگ‌های رپ مازندران — همه یک‌جا.</p>' +
+        '<div class="hero__cta">' +
+          '<a class="btn btn--gold" href="music.html">🎧 شنیدن آهنگ‌ها</a>' +
+          '<a class="btn" href="index.html">📅 میتینگ‌ها</a>' +
+        '</div>' +
       '</div>' +
     '</section>';
 
@@ -95,6 +127,27 @@
           '<span class="tag tag--soon">' + (m.soon ? "حدود " : "") + A.fa(d) + ' روز مانده</span>' +
           '<span class="tag">ظرفیت ' + A.fa(m.cap || 0) + ' نفر</span></div></a>';
   }
+
+  /* ═══ ۷) فوتر ═══ */
+  html +=
+    '<footer class="sitefoot">' +
+      '<div class="sitefoot__top">' +
+        '<img src="assets/img/logo.png" alt="۰۱۱ رپ" class="sitefoot__logo"/>' +
+        '<div class="sitefoot__brand">۰۱۱ <b>RAP</b><small>پلتفرم رپ مازندران</small></div>' +
+      '</div>' +
+      '<nav class="sitefoot__nav" aria-label="پاورقی">' +
+        '<a href="home.html">خانه</a>' +
+        '<a href="music.html">آهنگ‌ها</a>' +
+        '<a href="artists.html">آرتیست‌ها</a>' +
+        '<a href="battles.html">بتل‌ها</a>' +
+        '<a href="rank.html">رنکینگ</a>' +
+        '<a href="index.html">میتینگ‌ها</a>' +
+        '<a href="rules.html">قوانین</a>' +
+        '<a href="auth.html">ورود</a>' +
+        '<a href="settings.html">تنظیمات</a>' +
+      '</nav>' +
+      '<p class="sitefoot__credit">طراحی و توسعه: <b>AFTER EDIT</b> · ' + new Date().getFullYear() + '</p>' +
+    '</footer>';
 
   v.innerHTML = html;
 
